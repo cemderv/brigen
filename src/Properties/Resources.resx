@@ -1,0 +1,517 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+      Microsoft ResX Schema 
+      
+      Version 2.0
+      
+      The primary goals of this format is to allow a simple XML format 
+      that is mostly human readable. The generation and parsing of the 
+      various data types are done through the TypeConverter classes 
+      associated with the data types.
+      
+      Example:
+      
+      ... ado.net/XML headers & schema ...
+      <resheader name="resmimetype">text/microsoft-resx</resheader>
+      <resheader name="version">2.0</resheader>
+      <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+      <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+      <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+      <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+      <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+          <value>[base64 mime encoded serialized .NET Framework object]</value>
+      </data>
+      <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+          <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+          <comment>This is a comment</comment>
+      </data>
+                  
+      There are any number of "resheader" rows that contain simple 
+      name/value pairs.
+      
+      Each data row contains a name, and value. The row also contains a 
+      type or mimetype. Type corresponds to a .NET class that support 
+      text/value conversion through the TypeConverter architecture. 
+      Classes that don't support this are serialized and stored with the 
+      mimetype set.
+      
+      The mimetype is used for serialized objects, and tells the 
+      ResXResourceReader how to depersist the object. This is currently not 
+      extensible. For a given mimetype the value must be set accordingly:
+      
+      Note - application/x-microsoft.net.object.binary.base64 is the format 
+      that the ResXResourceWriter will generate, however the reader can 
+      read any of the formats listed below.
+      
+      mimetype: application/x-microsoft.net.object.binary.base64
+      value   : The object must be serialized with 
+              : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+              : and then encoded with base64 encoding.
+      
+      mimetype: application/x-microsoft.net.object.soap.base64
+      value   : The object must be serialized with 
+              : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+              : and then encoded with base64 encoding.
+  
+      mimetype: application/x-microsoft.net.object.bytearray.base64
+      value   : The object must be serialized into a byte array 
+              : using a System.ComponentModel.TypeConverter
+              : and then encoded with base64 encoding.
+      -->
+  <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
+              id="root"
+              xmlns="">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>
+      System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+      PublicKeyToken=b77a5c561934e089
+    </value>
+  </resheader>
+  <resheader name="writer">
+    <value>
+      System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+      PublicKeyToken=b77a5c561934e089
+    </value>
+  </resheader>
+  <assembly alias="System.Windows.Forms"
+            name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
+  <data name="TS_CClassBuffer" xml:space="preserve">
+        <value>template &lt;typename T, typename U, size_t Size&gt;
+class ClassBuffer final {
+public:
+  explicit ClassBuffer(U* const* data, uint32_t size)
+      : m_Large(nullptr)
+      , m_Size(size)
+  {
+    T* ptr = nullptr;
+    if (size &gt; Size) {
+      m_Large = static_cast&lt;T*&gt;(std::malloc(sizeof(T) * size));
+      ptr     = m_Large;
+    }
+    else {
+      ptr = m_Small;
+    }
+
+    if (ptr != nullptr) {
+      for (uint32_t i = 0u; i &lt; size; ++i) {
+        *reinterpret_cast&lt;uintptr_t**&gt;(&amp;ptr[i]) =
+            const_cast&lt;uintptr_t*&gt;(reinterpret_cast&lt;const uintptr_t*&gt;(data[i]));
+      }
+    }
+  }
+
+  ClassBuffer(const ClassBuffer&amp;) = delete;
+
+  void operator=(const ClassBuffer&amp;) = delete;
+
+  ClassBuffer(ClassBuffer&amp;&amp;) noexcept = delete;
+
+  void operator=(ClassBuffer&amp;&amp;) noexcept = delete;
+
+  ~ClassBuffer() noexcept {
+    if (m_Size &gt; 0u) {
+      T* const ptr = m_Large != nullptr ? m_Large : m_Small;
+
+      for (uint32_t i = 0u; i &lt; m_Size; ++i) {
+        *reinterpret_cast&lt;uintptr_t**&gt;(&amp;ptr[i]) = nullptr;
+      }
+    }
+
+    if (m_Large != nullptr) {
+      std::free(m_Large);
+      m_Large = nullptr;
+    }
+  }
+
+  const T* GetData() const {
+    return m_Large != nullptr ? m_Large : m_Small;
+  }
+
+private:
+  T        m_Small[Size];
+  T*       m_Large;
+  uint32_t m_Size;
+};</value>
+    </data>
+  <data name="TS_ClassPrereqs" xml:space="preserve">
+        <value>#define ${MOD}_CLASS_(className)                       \
+public:                                                \
+  className();                                         \
+  explicit className(className##Impl* impl);           \
+  className(const className&amp; copyFrom);                \
+  className&amp; operator=(const className&amp; copyFrom);     \
+  className(className&amp;&amp; moveFrom) noexcept;            \
+  className&amp; operator=(className&amp;&amp; moveFrom) noexcept; \
+  ~className() noexcept;                               \
+  bool ${IS_VALID}() const;                            \
+  explicit operator bool() const {                     \
+    return this-&gt;${IS_VALID}();                        \
+  }                                                    \
+  bool operator==(const className&amp; rhs) const {        \
+    return m_Impl == rhs.m_Impl;                       \
+  }                                                    \
+  bool operator!=(const className&amp; rhs) const {        \
+    return m_Impl != rhs.m_Impl;                       \
+  }                                                    \
+  className##Impl* ${GET_IMPL}() const {               \
+    return m_Impl;                                     \
+  }                                                    \
+  void ${SET_IMPL}(className##Impl* impl);             \
+  className##Impl* ${DROP_IMPL}() {                    \
+    className##Impl* ptr = m_Impl;                     \
+    m_Impl = nullptr;                                  \
+    return ptr;                                        \
+  }                                                    \
+private:                                               \
+  className##Impl* m_Impl;                             \
+public:</value>
+    </data>
+  <data name="TS_CppBool32" xml:space="preserve">
+        <value>class bool32_t {
+public:
+  bool32_t()
+      : m_Value(0) {
+  }
+
+  bool32_t(bool value) // NOLINT(google-explicit-constructor)
+      : m_Value(static_cast&lt;int32_t&gt;(value)) {
+  }
+
+  operator bool() const noexcept { // NOLINT(google-explicit-constructor)
+    return static_cast&lt;bool&gt;(m_Value);
+  }
+
+private:
+  int32_t m_Value;
+};</value>
+    </data>
+  <data name="TS_CppDefineEnumOps" xml:space="preserve">
+        <value>#define ${MOD}_DEFINE_ENUM_FLAG_OPS(enumName)                    \
+  static inline enumName operator&amp;(enumName lhs, enumName rhs) { \
+    return enumName(int(lhs) &amp; int(rhs));                        \
+  }                                                              \
+  static inline enumName operator|(enumName lhs, enumName rhs) { \
+    return enumName(int(lhs) | int(rhs));                        \
+  }                                                              \
+  static inline bool HasFlag(enumName flags, enumName test)    { \
+    return (flags &amp; test) == test;                               \
+  }</value>
+    </data>
+  <data name="TS_CppInvokeFunction" xml:space="preserve">
+        <value>#define ${mod}_InvokeFunction(functor, ...) functor(functor##_sysValue, __VA_ARGS__)</value>
+    </data>
+  <data name="TS_CppScopeGuard" xml:space="preserve">
+        <value>namespace brigen_internal
+{
+namespace detail
+{
+template &lt;typename T, typename = void&gt;
+struct is_noarg_callable_t : public std::false_type
+{
+};
+
+template &lt;typename T&gt;
+struct is_noarg_callable_t&lt;T, decltype(std::declval&lt;T&amp;&amp;&gt;()())&gt;
+    : public std::true_type
+{
+};
+
+template &lt;typename T&gt;
+struct returns_void_t
+    : public std::is_same&lt;void, decltype(std::declval&lt;T&amp;&amp;&gt;()())&gt;
+{
+};
+
+template &lt;typename T&gt;
+struct is_nothrow_invocable_if_required_t
+    : public
+#ifdef BRIGEN_SG_REQUIRE_NOEXCEPT
+      std::is_nothrow_invocable&lt;T&gt; /* Note: _r variants not enough to
+                                   confirm void return: any return can be
+                                   discarded so all returns are
+                                   compatible with void */
+#else
+      std::true_type
+#endif
+{
+};
+
+template &lt;typename A, typename B, typename... C&gt;
+struct and_t : public and_t&lt;A, and_t&lt;B, C...&gt;&gt;
+{
+};
+
+template &lt;typename A, typename B&gt;
+struct and_t&lt;A, B&gt; : public std::conditional&lt;A::value, B, A&gt;::type
+{
+};
+
+template &lt;typename T&gt;
+struct is_proper_sg_callback_t
+    : public and_t&lt;is_noarg_callable_t&lt;T&gt;, returns_void_t&lt;T&gt;,
+                   is_nothrow_invocable_if_required_t&lt;T&gt;,
+                   std::is_nothrow_destructible&lt;T&gt;&gt;
+{
+};
+
+template &lt;typename Callback,
+          typename = typename std::enable_if&lt;
+              is_proper_sg_callback_t&lt;Callback&gt;::value&gt;::type&gt;
+class scope_guard;
+
+template &lt;typename Callback&gt;
+detail::scope_guard&lt;Callback&gt; make_scope_guard(Callback&amp;&amp; callback) noexcept(
+    std::is_nothrow_constructible&lt;Callback, Callback&amp;&amp;&gt;::value);
+
+template &lt;typename Callback&gt; class scope_guard&lt;Callback&gt; final
+{
+public:
+  typedef Callback callback_type;
+
+  scope_guard(scope_guard&amp;&amp; other) noexcept(
+      std::is_nothrow_constructible&lt;Callback, Callback&amp;&amp;&gt;::value);
+
+  ~scope_guard() noexcept;
+
+  void dismiss() noexcept;
+
+public:
+  scope_guard()                   = delete;
+  scope_guard(const scope_guard&amp;) = delete;
+  scope_guard&amp; operator=(const scope_guard&amp;) = delete;
+  scope_guard&amp; operator=(scope_guard&amp;&amp;) = delete;
+
+private:
+  explicit scope_guard(Callback&amp;&amp; callback) noexcept(
+      std::is_nothrow_constructible&lt;Callback, Callback&amp;&amp;&gt;::value);
+
+  friend scope_guard&lt;Callback&gt; make_scope_guard&lt;Callback&gt;(Callback&amp;&amp;) noexcept(
+      std::is_nothrow_constructible&lt;Callback, Callback&amp;&amp;&gt;::value);
+
+private:
+  Callback m_callback;
+  bool     m_active;
+};
+} // namespace detail
+
+using detail::make_scope_guard;
+
+template &lt;typename Callback&gt;
+detail::scope_guard&lt;Callback&gt;::scope_guard(Callback&amp;&amp; callback) noexcept(
+    std::is_nothrow_constructible&lt;Callback, Callback&amp;&amp;&gt;::value)
+    : m_callback(std::forward&lt;Callback&gt;(callback))
+    , m_active{true}
+{
+}
+
+template &lt;typename Callback&gt;
+detail::scope_guard&lt;Callback&gt;::~scope_guard() noexcept
+{
+  if (m_active)
+    m_callback();
+}
+
+template &lt;typename Callback&gt;
+detail::scope_guard&lt;Callback&gt;::scope_guard(scope_guard&amp;&amp; other) noexcept(
+    std::is_nothrow_constructible&lt;Callback, Callback&amp;&amp;&gt;::value)
+    : m_callback(std::forward&lt;Callback&gt;(other.m_callback)) // idem
+    , m_active{std::move(other.m_active)}
+{
+  other.m_active = false;
+}
+
+template &lt;typename Callback&gt;
+inline void detail::scope_guard&lt;Callback&gt;::dismiss() noexcept
+{
+  m_active = false;
+}
+
+template &lt;typename Callback&gt;
+inline auto detail::make_scope_guard(Callback&amp;&amp; callback) noexcept(
+    std::is_nothrow_constructible&lt;Callback, Callback&amp;&amp;&gt;::value)
+    -&gt; detail::scope_guard&lt;Callback&gt;
+{
+  return detail::scope_guard&lt;Callback&gt;{std::forward&lt;Callback&gt;(callback)};
+}
+} // namespace brigen_internal</value>
+    </data>
+  <data name="TS_CppUndefs" xml:space="preserve">
+        <value>#ifdef ${MOD}_CLASS_
+#undef ${MOD}_CLASS_
+#endif
+
+#ifdef ${MOD}_DEFINE_ENUM_FLAG_OPS
+#undef ${MOD}_DEFINE_ENUM_FLAG_OPS
+#endif</value>
+    </data>
+  <data name="TS_GetArrayHelper" xml:space="preserve">
+        <value>template &lt;typename TContainer, typename T&gt;
+static inline void GetArrayHelper(const TContainer&amp; container, T* resultArray,
+                                  uint32_t* resultArraySize)
+{
+  if (!resultArray &amp;&amp; resultArraySize)
+  {
+    *resultArraySize = uint32_t(container.size());
+    return;
+  }
+
+  size_t numElementsToGet =
+      resultArraySize ? size_t(*resultArraySize) : container.size();
+
+  if (numElementsToGet &gt; container.size())
+    numElementsToGet = container.size();
+
+  if (resultArray)
+  {
+    for (size_t i = 0u; i &lt; numElementsToGet; ++i)
+      resultArray[i] = static_cast&lt;T&gt;(container[i]);
+  }
+}</value>
+    </data>
+  <data name="TS_ObjectImplBase" xml:space="preserve">
+        <value>#define ADD_REF_IMPL() \
+  if (m_Impl != nullptr) { \
+    ObjectImplBase* obj = static_cast&lt;ObjectImplBase*&gt;(m_Impl); \
+    obj-&gt;AddRef(); \
+  }
+
+#define RELEASE_IMPL() \
+  if (m_Impl != nullptr) { \
+    ObjectImplBase* obj = static_cast&lt;ObjectImplBase*&gt;(m_Impl); \
+    obj-&gt;Release(); \
+    m_Impl = nullptr; \
+  }
+
+#define DEFINE_OBJ_CONSTRUCT(className) \
+  className::className() \
+    : m_Impl(nullptr) {} \
+  className::className(className##Impl* impl) \
+    : m_Impl(impl) { \
+    ADD_REF_IMPL(); \
+  } \
+  className::className(const className&amp; copyFrom) \
+      : m_Impl(copyFrom.m_Impl) { \
+    ADD_REF_IMPL(); \
+  } \
+  className&amp; className::operator=(const className&amp; copyFrom) { \
+    if (&amp;copyFrom != this) { \
+      RELEASE_IMPL(); \
+      m_Impl = copyFrom.m_Impl; \
+      ADD_REF_IMPL(); \
+    } \
+    return *this; \
+  } \
+  className::className(className&amp;&amp; moveFrom) noexcept \
+      : m_Impl(moveFrom.m_Impl) { \
+    moveFrom.m_Impl = nullptr; \
+  } \
+  className&amp; className::operator=(className&amp;&amp; moveFrom) noexcept { \
+    if (&amp;moveFrom != this) { \
+      RELEASE_IMPL(); \
+      m_Impl          = moveFrom.m_Impl; \
+      moveFrom.m_Impl = nullptr; \
+    } \
+    return *this; \
+  } \
+  className::~className() noexcept { \
+    RELEASE_IMPL(); \
+  } \
+  bool className::${IS_VALID}() const { \
+    return m_Impl != nullptr; \
+  } \
+  void className::${SET_IMPL}(className##Impl* impl) { \
+    RELEASE_IMPL(); \
+    m_Impl = impl; \
+    ADD_REF_IMPL(); \
+  }
+
+class ObjectImplBase
+{
+public:
+  ObjectImplBase()
+    : m_RefCount(0u)
+  { }
+
+  ObjectImplBase(const ObjectImplBase&amp;) = delete;
+
+  void operator=(const ObjectImplBase&amp;) = delete;
+
+  ObjectImplBase(ObjectImplBase&amp;&amp;) noexcept = delete;
+
+  void operator=(ObjectImplBase&amp;&amp;) noexcept = delete;
+
+  virtual ~ObjectImplBase() noexcept = default;
+
+  uint32_t AddRef() {
+    return ++m_RefCount;
+  }
+
+  uint32_t Release() {
+    const uint32_t refCount = --m_RefCount;
+
+    assert(refCount != static_cast&lt;uint32_t&gt;(-1));
+
+    if (refCount == 0u) {
+      delete this;
+    }
+
+    return refCount;
+  }
+
+private:
+  std::atomic&lt;uint32_t&gt; m_RefCount;
+};</value>
+    </data>
+</root>
