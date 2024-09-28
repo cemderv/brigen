@@ -323,6 +323,9 @@ public sealed class PythonCodeGenerator(Module module) : CodeGenerator(module)
 
     void GenerateClassFunction(Writer w, FunctionDecl func)
     {
+        // TODO: This method has too much noise. Break it up into smaller pieces.
+        // The indentation is criminal.
+
         var modl = Module;
 
         Debug.Assert(!func.IsCtor);
@@ -459,10 +462,6 @@ public sealed class PythonCodeGenerator(Module module) : CodeGenerator(module)
                         var arrType = paramType as ArrayType;
                         Debug.Assert(arrType != null);
 
-                        var typeName =
-                          CppCodeGenerator.GetTypeName(modl, arrType.ElementType, CppCodeGenerator.NameContext.FunctionParam,
-                            CppCodeGenerator.NameContextFlags.ForceModulePrefix);
-
                         w.WriteLine($"const auto {param.Name}_arrptr = {viewParamRef}.data();");
                         w.WriteLine($"const auto {param.Name}_arrsize = static_cast<uint32_t>({viewParamRef}.size());");
                     }
@@ -523,42 +522,28 @@ public sealed class PythonCodeGenerator(Module module) : CodeGenerator(module)
                         w.Indent();
 
                         // Declare any necessary variables.
+                        foreach (var innerParam in func.Parameters)
                         {
-                            foreach (var innerParam in func.Parameters)
+                            if (!innerParam.Type.IsDelegate)
+                                continue;
+
+                            int j = 1;
+                            foreach (var delgParam in delg.Parameters)
                             {
-                                if (innerParam.Type.IsDelegate)
+                                if (delgParam.Type.IsArray)
                                 {
-                                    int j = 1;
-                                    foreach (var delgParam in delg.Parameters)
-                                    {
-                                        if (delgParam.Type.IsArray)
-                                        {
-                                            var parName = nameGen[j];
-                                            var szName = $"{parName}sz";
-                                            w.WriteLine($"vector<string> {parName}vec{{static_cast<size_t>({szName})}};");
+                                    var parName = nameGen[j];
+                                    var szName = $"{parName}sz";
+                                    w.WriteLine($"vector<string> {parName}vec{{static_cast<size_t>({szName})}};");
 
-                                            w.Write(string.Format("for (uint32_t {0} = 0u; {0} < {1}; ++{0}) ", $"{parName}sz_i",
-                                              $"{parName}sz"));
-                                            w.Write(string.Format("{0}[{1}] = {2}[{1}];", $"{parName}vec", $"{parName}sz_i", parName));
-                                            w.WriteLine();
-                                        }
-
-                                        ++j;
-                                    }
+                                    w.Write(string.Format("for (uint32_t {0} = 0u; {0} < {1}; ++{0}) ", $"{parName}sz_i",
+                                      $"{parName}sz"));
+                                    w.Write(string.Format("{0}[{1}] = {2}[{1}];", $"{parName}vec", $"{parName}sz_i", parName));
+                                    w.WriteLine();
                                 }
-                            }
 
-#if false
-              var parName = nameGen.GetName(i);
-              var szName = format("{}sz", parName);
-              w.Write("vector<string> " << parName << "vec{static_cast<size_t>("
-                      << szName << "};\n";
-              w.Write(format("for (uint32_t {0} = 0u; {0} < {1}; ++{0})",
-                format("{}sz", parName),
-                format("{}sz_i", parName));
-              w.Write(format("{0}[{1}] = {2}[{1}]", format("{}vec", parName),
-                format("{}sz_i", parName), parName);
-#endif
+                                ++j;
+                            }
                         }
 
                         // Return if the delegate has a return-value.

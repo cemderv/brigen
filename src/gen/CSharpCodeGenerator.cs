@@ -582,64 +582,6 @@ public sealed class CSharpCodeGenerator(Module module) : CodeGenerator(module)
         w.WriteLine("public override int GetHashCode()");
         w.OpenBrace();
 
-#if false
-  constexpr int hashCodeBatchSize = 8u;
-
-  if (fields.Count() < hashCodeBatchSize)
-  {
-    w.Write( "return HashCode.Combine(";
-    int i = 0u;
-    foreach (var field in fields)
-    {
-      w.Write(field);
-
-      if ((i + 1) < fields.Count())
-        w.Write(", ");
-
-      ++i;
-    }
-    w.Write( ");\n";
-  }
-  else
-  {
-    const int howManyBatches =
-        int(ceil(double(fields.Count()) / hashCodeBatchSize));
-
-    foreach (int b = 0; b < howManyBatches; ++b)
-    {
-      const int offset = b * hashCodeBatchSize;
-
-      w.Write( "int hash" << to_string(b) << " = HashCode.Combine(";
-
-      const int howManyFields = min(fields.Count(), hashCodeBatchSize);
-
-      int i = 0;
-      foreach (int f = 0; f < howManyFields; ++f)
-      {
-        w.Write( fields[offset + f];
-
-        if ((i + 1) < howManyFields)
-          w.Write( ", ";
-
-        ++i;
-      }
-
-      w.Write( ");\n";
-    }
-
-    w.Write("return HashCode.Combine(");
-
-    foreach (int b = 0; b < howManyBatches; ++b)
-    {
-      w.Write( "hash" << to_string(b);
-
-      if ((b + 1) < howManyBatches)
-        w.Write( ", ";
-    }
-
-    w.Write( ");\n";
-  }
-#else
         w.WriteLine("unchecked");
         w.OpenBrace();
         w.WriteLine($"int hash = {Module.HashFirstPrime};");
@@ -648,7 +590,6 @@ public sealed class CSharpCodeGenerator(Module module) : CodeGenerator(module)
 
         w.WriteLine("return hash;");
         w.CloseBrace();
-#endif
 
         w.CloseBrace();
     }
@@ -710,40 +651,7 @@ public sealed class CSharpCodeGenerator(Module module) : CodeGenerator(module)
         if (comment == null)
             return;
 
-#if false
-      if (string.IsNullOrEmpty(comment))
-        return;
-
-      w.WriteLine("/// <summary>");
-
-      string[] lines = comment.Split('\n');
-
-      foreach (string line in lines)
-      {
-        w.Write("/// ");
-
-        if (parentDecl is PropertyDecl prop && line == lines.First())
-        {
-          if (prop.HasGetter && prop.HasSetter)
-            w.Write("Gets or sets ");
-          else if (prop.HasGetter)
-            w.Write("Gets ");
-          else if (prop.HasSetter) w.Write("Sets ");
-        }
-
-        w.Write(line);
-        w.WriteLine();
-      }
-
-      w.WriteLine("/// </summary>");
-
-#if false
-      foreach (var pair in comment.getParameterDescriptions())
-      {
-        w.Write("/// <param name=\"" << pair.first << "\">" << pair.second << "</param>\n";
-      }
-#endif
-#endif
+        // TODO: implement
     }
 
     private void GenerateNativeFunctionsClass(Writer w)

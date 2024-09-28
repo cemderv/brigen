@@ -377,11 +377,7 @@ internal sealed class CToCppFuncCaller : IDisposable
                 // Pass a single lass.
                 string implVarName = _nameGen.CreateNext();
                 _writer.Write($"auto {implVarName} = ");
-#if false
-        // arg1: delgParam.Type.BaseTypeDecl.QualifiedCppName,
-        _writer.emitCppGetImpl(delgParamNames[i]);
-#endif
-                _writer.Write("SWAGGY;");
+                _writer.Write("(TODO);");
 
                 classVarMap.Add(delgParam, implVarName);
             }
