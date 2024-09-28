@@ -19,7 +19,7 @@ public sealed class Settings
     {
         var map = ParseOptions(args);
 
-        IsHelp = map.ContainsKey("help");
+        IsHelp = map.ContainsKey(_helpOptionName);
 
         if (IsHelp)
         {

@@ -3,14 +3,10 @@ using ClangSharp.Interop;
 
 namespace brigen.diff;
 
-internal sealed class SourceFileData : ClangBasedFile
+internal sealed class SourceFileData(DiffDetector diffDetector)
+    : ClangBasedFile(diffDetector)
 {
-    public List<FunctionInfo> Functions = new();
-
-    public SourceFileData(DiffDetector diffDetector)
-      : base(diffDetector)
-    {
-    }
+    public List<FunctionInfo> Functions = [];
 
     public override unsafe bool Load(string filename)
     {

@@ -3,7 +3,6 @@
 #endif
 
 using brigen.gen;
-using System.Reflection;
 
 namespace brigen;
 

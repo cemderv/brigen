@@ -24,8 +24,8 @@ internal sealed class CSharpPInvokeFuncCaller
         _writer = writer ?? throw new ArgumentNullException(nameof(writer));
         _nameGen = nameGen ?? throw new ArgumentNullException(nameof(nameGen));
         _function = function ?? throw new ArgumentNullException(nameof(function));
-        _gcHandles = new List<(FunctionParamDecl, string)>();
-        _parameterlessGcHandles = new List<string>();
+        _gcHandles = [];
+        _parameterlessGcHandles = [];
     }
 
     public void GenerateCall()

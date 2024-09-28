@@ -2,13 +2,9 @@
 
 namespace brigen.decl;
 
-public abstract class TypeDecl : Decl, IDataType
+public abstract class TypeDecl(string name, CodeRange range)
+    : Decl(name, range), IDataType
 {
-    protected TypeDecl(string name, CodeRange range)
-      : base(name, range)
-    {
-    }
-
     public string CppName => Name;
     public string NameInJava => Name;
     public string QualifiedNameInJava => Module != null ? $"{Module.JavaPackageName}.{NameInJava}" : string.Empty;

@@ -2,54 +2,53 @@ namespace brigen;
 
 public sealed class Tokenizer
 {
-    private static readonly HashSet<string> _keywords = new()
-  {
-    Strings.KwEnum,
-    Strings.KwStruct,
-    Strings.KwClass,
-    Strings.KwStatic,
-    Strings.KwDelegate,
-    Strings.KwFunc,
-    Strings.KwCtor,
-    Strings.KwGet,
-    Strings.KwSet,
-    Strings.KwArray,
-    Strings.KwConst,
-    Strings.KwModule,
-    Strings.KwTrue,
-    Strings.KwFalse,
-  };
+    private static readonly HashSet<string> _keywords =
+    [
+        Strings.KwEnum,
+        Strings.KwStruct,
+        Strings.KwClass,
+        Strings.KwStatic,
+        Strings.KwDelegate,
+        Strings.KwFunc,
+        Strings.KwCtor,
+        Strings.KwGet,
+        Strings.KwSet,
+        Strings.KwArray,
+        Strings.KwConst,
+        Strings.KwModule,
+        Strings.KwTrue,
+        Strings.KwFalse,
+    ];
 
     private static readonly Dictionary<char, TokenType> _tokenTypeMap = new()
-  {
-    { '=', TokenType.Equal },
-    { ',', TokenType.Comma },
-    { ';', TokenType.Semicolon },
-    { ':', TokenType.Colon },
-    { '(', TokenType.LeftParen },
-    { ')', TokenType.RightParen },
-    { '{', TokenType.LeftBrace },
-    { '}', TokenType.RightBrace },
-    { '.', TokenType.Dot },
-    { '#', TokenType.NumberSign },
-    { '/', TokenType.ForwardSlash },
-    { '"', TokenType.QuoteMark },
-    { '+', TokenType.Plus },
-    { '-', TokenType.Minus },
-    { '*', TokenType.Asterisk },
-    { '[', TokenType.LeftBracket },
-    { ']', TokenType.RightBracket },
-    { '\n', TokenType.Newline },
-    { '\r', TokenType.CarriageReturn }
-  };
+    {
+        { '=', TokenType.Equal },
+        { ',', TokenType.Comma },
+        { ';', TokenType.Semicolon },
+        { ':', TokenType.Colon },
+        { '(', TokenType.LeftParen },
+        { ')', TokenType.RightParen },
+        { '{', TokenType.LeftBrace },
+        { '}', TokenType.RightBrace },
+        { '.', TokenType.Dot },
+        { '#', TokenType.NumberSign },
+        { '/', TokenType.ForwardSlash },
+        { '"', TokenType.QuoteMark },
+        { '+', TokenType.Plus },
+        { '-', TokenType.Minus },
+        { '*', TokenType.Asterisk },
+        { '[', TokenType.LeftBracket },
+        { ']', TokenType.RightBracket },
+        { '\n', TokenType.Newline },
+        { '\r', TokenType.CarriageReturn }
+    };
 
-    private static readonly Dictionary<(TokenType, TokenType), TokenType> _twoTokenTypesToSingleTokenTypeMap =
-      new()
+    private static readonly Dictionary<(TokenType, TokenType), TokenType> _twoTokenTypesToSingleTokenTypeMap = new()
       {
-      { (TokenType.NumberSign, TokenType.NumberSign), TokenType.DoubleNumberSign },
-      { (TokenType.ForwardSlash, TokenType.ForwardSlash), TokenType.LineComment },
-      { (TokenType.LeftBracket, TokenType.LeftBracket), TokenType.DoubleLeftBracket },
-      { (TokenType.RightBracket, TokenType.RightBracket), TokenType.DoubleRightBracket }
+        { (TokenType.NumberSign, TokenType.NumberSign), TokenType.DoubleNumberSign },
+        { (TokenType.ForwardSlash, TokenType.ForwardSlash), TokenType.LineComment },
+        { (TokenType.LeftBracket, TokenType.LeftBracket), TokenType.DoubleLeftBracket },
+        { (TokenType.RightBracket, TokenType.RightBracket), TokenType.DoubleRightBracket }
       };
 
     private readonly List<TokenReplacement> _tokenReplacements = new(256);
@@ -175,7 +174,7 @@ public sealed class Tokenizer
               tRange.StartColumn,
               tRange.EndColumn);
 
-            string value = _text.Substring(mergedRange.Start, mergedRange.End - mergedRange.Start);
+            string value = _text[mergedRange.Start..mergedRange.End];
             var newToken = new Token(value, type, mergedRange);
 
             _tokenReplacements.Add(new TokenReplacement(t, 1, newToken));
@@ -244,7 +243,7 @@ public sealed class Tokenizer
             var mergedRange = new CodeRange(startRange.Filename, startRange.Line,
               startRange.Start, endRange.End, startRange.StartColumn, endRange.EndColumn);
 
-            string value = _text.Substring(mergedRange.Start, mergedRange.End - mergedRange.Start);
+            string value = _text[mergedRange.Start..mergedRange.End];
             var newTk = new Token(value, TokenType.LineComment, mergedRange);
 
             int count = nlTk - t;
@@ -273,7 +272,7 @@ public sealed class Tokenizer
 
     private bool AddRecordedToken(int i, int currTokenStart)
     {
-        string value = _text.Substring(currTokenStart, i - currTokenStart);
+        string value = _text[currTokenStart..i];
 
         if (IsAllWhiteSpaceOrEmpty(value))
             return false;
@@ -350,17 +349,10 @@ public sealed class Tokenizer
         }
     }
 
-    private readonly struct TokenReplacement
+    private readonly struct TokenReplacement(int start, int count, in Token newToken)
     {
-        public TokenReplacement(int start, int count, in Token newToken)
-        {
-            Start = start;
-            Count = count;
-            NewToken = newToken;
-        }
-
-        public readonly int Start;
-        public readonly int Count;
-        public readonly Token NewToken;
+        public readonly int Start = start;
+        public readonly int Count = count;
+        public readonly Token NewToken = newToken;
     }
 }

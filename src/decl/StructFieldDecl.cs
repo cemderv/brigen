@@ -3,17 +3,11 @@ using System.Diagnostics;
 
 namespace brigen.decl;
 
-public sealed class StructFieldDecl : Decl
+public sealed class StructFieldDecl(string name, CodeRange range, IDataType type)
+    : Decl(name, range)
 {
-    public StructFieldDecl(string name, CodeRange range, IDataType type)
-      : base(name, range)
-    {
-        Type = type;
-        AppearsInCtors = true;
-    }
-
-    public IDataType Type { get; private set; }
-    public bool AppearsInCtors { get; }
+    public IDataType Type { get; private set; } = type;
+    public bool AppearsInCtors { get; } = true;
     public string NameInCpp { get; private set; } = string.Empty;
     public string NameInJava { get; private set; } = string.Empty;
 

@@ -75,10 +75,10 @@ internal class ClassInfo
 {
     public string Namespace { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public List<FunctionInfo> Functions { get; set; } = new();
-    public List<EnumInfo> Enums { get; set; } = new();
-    public List<StructInfo> Structs { get; set; } = new();
-    public List<FieldInfo> Fields { get; set; } = new();
+    public List<FunctionInfo> Functions { get; set; } = [];
+    public List<EnumInfo> Enums { get; set; } = [];
+    public List<StructInfo> Structs { get; set; } = [];
+    public List<FieldInfo> Fields { get; set; } = [];
     public string Content { get; set; } = string.Empty;
     public ClassDecl? RepresentedClassDecl { get; set; }
 

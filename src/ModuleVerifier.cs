@@ -5,7 +5,7 @@ namespace brigen;
 
 internal sealed class ModuleVerifier
 {
-    private static readonly string[] _reservedTypeNames = { };
+    private static readonly string[] _reservedTypeNames = [];
 
     public void VerifyModule(Module module)
     {

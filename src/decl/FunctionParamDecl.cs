@@ -2,19 +2,14 @@
 
 namespace brigen.decl;
 
-public sealed class FunctionParamDecl : Decl
+public sealed class FunctionParamDecl(string name, CodeRange range, IDataType type)
+    : Decl(name, range)
 {
-    public FunctionParamDecl(string name, CodeRange range, IDataType type)
-      : base(name, range)
-    {
-        Type = type;
-    }
-
     public string NameInC => string.Empty;
     public Decl? ParentDecl { get; set; }
     public FunctionDecl? ParentFunction => ParentDecl as FunctionDecl;
     public DelegateDecl? ParentDelegate => ParentDecl as DelegateDecl;
-    public IDataType Type { get; private set; }
+    public IDataType Type { get; private set; } = type;
     public int Index { get; set; }
     public int IndexInCApi { get; set; }
 

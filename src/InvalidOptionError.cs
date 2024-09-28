@@ -1,9 +1,5 @@
 namespace brigen;
 
-internal sealed class InvalidOptionError : Exception
+internal sealed class InvalidOptionError(string message) : Exception(message)
 {
-    public InvalidOptionError(string message)
-      : base(message)
-    {
-    }
 }

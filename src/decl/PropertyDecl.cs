@@ -4,7 +4,8 @@ using System.Text;
 
 namespace brigen.decl;
 
-public sealed class PropertyDecl : Decl
+public sealed class PropertyDecl(string name, CodeRange range, PropertyDecl.PropMask mask, IDataType type)
+    : Decl(name, range)
 {
     [Flags]
     public enum PropMask
@@ -14,13 +15,6 @@ public sealed class PropertyDecl : Decl
     }
 
     private TypeDecl? _parentTypeDecl;
-
-    public PropertyDecl(string name, CodeRange range, PropMask mask, IDataType type)
-      : base(name, range)
-    {
-        Mask = mask;
-        Type = type;
-    }
 
     public TypeDecl? ParentTypeDecl
     {
@@ -36,10 +30,10 @@ public sealed class PropertyDecl : Decl
     }
 
     public ClassDecl? ParentAsClass => ParentTypeDecl as ClassDecl;
-    public PropMask Mask { get; }
+    public PropMask Mask { get; } = mask;
     public bool HasGetter => (Mask & PropMask.Getter) == PropMask.Getter;
     public bool HasSetter => (Mask & PropMask.Setter) == PropMask.Setter;
-    public IDataType Type { get; private set; }
+    public IDataType Type { get; private set; } = type;
 
     public bool IsStatic { get; private set; }
 

@@ -18,7 +18,7 @@ public sealed class ClassDecl : TypeDecl
     private readonly List<PropertyDecl> _properties;
     private readonly List<FunctionDecl> _allExportedFunctions;
     private readonly List<FunctionDecl> _allExportedFunctionsWithoutCtors;
-    private List<PropToFuncKey> _propToFuncKeys = new();
+    private List<PropToFuncKey> _propToFuncKeys = [];
 
     public ClassDecl(string name, CodeRange range, List<FunctionDecl> functions, List<PropertyDecl> properties,
       Modifier modifiers)
@@ -30,8 +30,8 @@ public sealed class ClassDecl : TypeDecl
         _ctors = functions.Where(f => f.IsCtor).ToList();
         _functions = functions.Where(f => !f.IsCtor).ToList();
 
-        _allExportedFunctions = new List<FunctionDecl>();
-        _allExportedFunctionsWithoutCtors = new List<FunctionDecl>();
+        _allExportedFunctions = [];
+        _allExportedFunctionsWithoutCtors = [];
 
         foreach (var ctor in _ctors)
             ctor.ParentTypeDecl = this;
@@ -79,15 +79,18 @@ public sealed class ClassDecl : TypeDecl
         _allExportedFunctions.AddRange(_ctors);
         _allExportedFunctions.AddRange(_functions);
 
-        _propToFuncKeys = new List<PropToFuncKey>();
+        _propToFuncKeys = [];
 
         foreach (PropertyDecl prop in _properties)
         {
             if (prop.HasGetter)
             {
-                var func = new FunctionDecl(prop.GetterNameInCpp, prop.Range, FunctionFlags.Const, prop.Type,
-                  new List<FunctionParamDecl>())
-                { ParentTypeDecl = this, Attribute = prop.Attribute, OriginalProperty = prop };
+                var func = new FunctionDecl(prop.GetterNameInCpp, prop.Range, FunctionFlags.Const, prop.Type, [])
+                {
+                    ParentTypeDecl = this,
+                    Attribute = prop.Attribute,
+                    OriginalProperty = prop
+                };
 
                 func.Verify(modl);
 

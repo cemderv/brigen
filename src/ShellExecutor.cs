@@ -25,5 +25,5 @@ internal static class ShellExecutor
         return (outputStr, proc.ExitCode);
     }
 
-    public static (string, int) ExecuteAndGetOutput(string filename) => ExecuteAndGetOutput(filename, new string[0]);
+    public static (string, int) ExecuteAndGetOutput(string filename) => ExecuteAndGetOutput(filename, []);
 }

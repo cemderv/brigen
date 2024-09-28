@@ -15,10 +15,14 @@ public enum TargetLanguage
 internal static class TargetLanguageHelper
 {
     private static readonly LanguageInfo[] _list =
-    {
-    new(TargetLanguage.CSharp, "csharp"), new(TargetLanguage.Python, "python"), new(TargetLanguage.Java, "java"),
-    new(TargetLanguage.C, "c"), new(TargetLanguage.Cpp, "cpp"), new(TargetLanguage.All, "all")
-  };
+    [
+        new(TargetLanguage.CSharp, "csharp"),
+        new(TargetLanguage.Python, "python"),
+        new(TargetLanguage.Java, "java"),
+        new(TargetLanguage.C, "c"),
+        new(TargetLanguage.Cpp, "cpp"),
+        new(TargetLanguage.All, "all")
+    ];
 
     public static TargetLanguage ParseTargetLanguageFlags(string str)
       => str.Split(',', StringSplitOptions.RemoveEmptyEntries)

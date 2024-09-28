@@ -490,9 +490,7 @@ public sealed class Parser
     }
 
     private void ExpectIdentifier(bool advance = false)
-    {
-        Expect(TokenType.Identifier, advance);
-    }
+        => Expect(TokenType.Identifier, advance);
 
     private string ConsumeToken()
     {

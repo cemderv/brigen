@@ -4,15 +4,10 @@ using System.Diagnostics;
 
 namespace brigen.gen;
 
-public sealed class PythonCodeGenerator : CodeGenerator
+public sealed class PythonCodeGenerator(Module module) : CodeGenerator(module)
 {
     private const string g_ModVarName = "m_";
     private readonly TempVarNameGen _nameGen = new("brigen_");
-
-    public PythonCodeGenerator(Module module)
-      : base(module)
-    {
-    }
 
     public override void Generate()
     {
@@ -26,8 +21,7 @@ public sealed class PythonCodeGenerator : CodeGenerator
 
         var w = new Writer();
 
-        w.WriteAutoGenerationNotice(paths.PythonCppFile, new[] { $"This is the Python wrapper file for {Module.Name}." },
-          "//", false);
+        w.WriteAutoGenerationNotice(paths.PythonCppFile, [$"This is the Python wrapper file for {Module.Name}."], "//", false);
 
         w.WriteLine("#include <pybind11/functional.h>");
         w.WriteLine("#include <pybind11/pybind11.h>");

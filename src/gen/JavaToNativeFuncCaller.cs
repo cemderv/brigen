@@ -5,16 +5,10 @@ namespace brigen.gen;
 /// <summary>
 /// Handles calls from non-native Java methods to native Java methods.
 /// </summary>
-internal sealed class JavaToNativeFuncCaller
+internal sealed class JavaToNativeFuncCaller(Writer writer, FunctionDecl function)
 {
-    private readonly FunctionDecl _function;
-    private readonly Writer _writer;
-
-    public JavaToNativeFuncCaller(Writer writer, FunctionDecl function)
-    {
-        _writer = writer;
-        _function = function;
-    }
+    private readonly FunctionDecl _function = function;
+    private readonly Writer _writer = writer;
 
     public void GenerateArguments()
     {

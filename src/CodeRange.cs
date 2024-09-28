@@ -2,18 +2,9 @@ using System.Diagnostics;
 
 namespace brigen;
 
-public readonly struct CodeRange : IEquatable<CodeRange>
+public readonly struct CodeRange(string filename, int line = 0, int start = 0, int end = 0, int startColumn = 0, int endColumn = 0)
+    : IEquatable<CodeRange>
 {
-    public CodeRange(string filename, int line = 0, int start = 0, int end = 0, int startColumn = 0, int endColumn = 0)
-    {
-        Filename = filename;
-        Line = line;
-        Start = start;
-        End = end;
-        StartColumn = startColumn;
-        EndColumn = endColumn;
-    }
-
     public static CodeRange Merge(CodeRange start, CodeRange end)
     {
         Debug.Assert(start.Filename == end.Filename);
@@ -24,12 +15,12 @@ public readonly struct CodeRange : IEquatable<CodeRange>
     public static bool AreDirectNeighbors(in CodeRange a, in CodeRange b)
       => a.Line == b.Line && a.EndColumn == b.StartColumn;
 
-    public readonly string Filename;
-    public readonly int Line;
-    public readonly int Start;
-    public readonly int End;
-    public readonly int StartColumn;
-    public readonly int EndColumn;
+    public readonly string Filename = filename;
+    public readonly int Line = line;
+    public readonly int Start = start;
+    public readonly int End = end;
+    public readonly int StartColumn = startColumn;
+    public readonly int EndColumn = endColumn;
 
     public override string ToString()
       => $"Line {Line} Column {StartColumn}-{EndColumn} ({Path.GetFileName(Filename.AsSpan())})";

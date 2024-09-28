@@ -168,9 +168,7 @@ internal sealed class JniToCppFuncCaller
     }
 
     private void ReturnArrayOfClasses(IDataType returnType, string returnVarName)
-    {
-        throw new NotImplementedException();
-    }
+        => throw new NotImplementedException();
 
     private void ReturnSingleClass(string returnVarName)
     {
@@ -250,9 +248,7 @@ internal sealed class JniToCppFuncCaller
     }
 
     private void ReturnString(string returnVarName)
-    {
-        _writer.WriteLine($"return env->NewStringUTF({returnVarName});");
-    }
+        => _writer.WriteLine($"return env->NewStringUTF({returnVarName});");
 
     private void DeclareStructArgVars(FunctionParamDecl param, StructDecl strct)
     {
@@ -669,7 +665,7 @@ internal sealed class JniToCppFuncCaller
 
     private class VarCache<T>
     {
-        private readonly Dictionary<FunctionParamDecl, T> _vars = new();
+        private readonly Dictionary<FunctionParamDecl, T> _vars = [];
 
         public void Add(FunctionParamDecl param, T var) => _vars.Add(param, var);
 

@@ -1,6 +1,6 @@
 namespace brigen.types;
 
-public sealed class PrimitiveType : IDataType
+public sealed class PrimitiveType(string name) : IDataType
 {
     public static readonly PrimitiveType Undefined = new("undefined");
     public static readonly PrimitiveType Byte = new("byte");
@@ -28,14 +28,9 @@ public sealed class PrimitiveType : IDataType
     { Void.Name, Void }
   };
 
-    public PrimitiveType(string name)
-    {
-        Name = name;
-    }
-
     public IDataType VerifyType(Module module) => this;
 
-    public string Name { get; }
+    public string Name { get; } = name;
 
     public bool IsClass => false;
     public bool IsArray => false;

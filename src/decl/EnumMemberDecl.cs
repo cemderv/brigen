@@ -2,17 +2,12 @@
 
 namespace brigen.decl;
 
-public sealed class EnumMemberDecl : Decl
+public sealed class EnumMemberDecl(string name, CodeRange range, int? value)
+    : Decl(name, range)
 {
-    public EnumMemberDecl(string name, CodeRange range, int? value)
-      : base(name, range)
-    {
-        Value = value;
-    }
-
     public EnumDecl? ParentEnum { get; set; }
 
-    public int? Value { get; private set; }
+    public int? Value { get; private set; } = value;
 
     protected override void OnVerify(Module module)
     {

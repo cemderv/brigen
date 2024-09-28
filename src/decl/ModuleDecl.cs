@@ -1,12 +1,8 @@
 ﻿namespace brigen.decl;
 
-public class ModuleDecl : Decl
+public class ModuleDecl(string name, CodeRange range)
+    : Decl(name, range)
 {
-    public ModuleDecl(string name, CodeRange range)
-      : base(name, range)
-    {
-    }
-
     protected override void OnVerify(Module module)
     {
     }

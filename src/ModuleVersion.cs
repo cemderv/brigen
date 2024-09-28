@@ -1,19 +1,11 @@
 ﻿namespace brigen;
 
-public sealed class ModuleVersion
+public sealed class ModuleVersion(int major, int minor, int revision, string tag)
 {
-    public ModuleVersion(int major, int minor, int revision, string tag)
-    {
-        Major = major;
-        Minor = minor;
-        Revision = revision;
-        Tag = tag;
-    }
-
-    public int Major { get; }
-    public int Minor { get; }
-    public int Revision { get; }
-    public string Tag { get; }
+    public int Major { get; } = major;
+    public int Minor { get; } = minor;
+    public int Revision { get; } = revision;
+    public string Tag { get; } = tag;
 
     public static ModuleVersion? Parse(string str)
     {
