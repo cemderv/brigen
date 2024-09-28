@@ -91,7 +91,7 @@ var s = new SomeStruct(20, SomeEnum.Member1, new Vector2(1, 2));
 c.SomeProperty = c.Add(s, 20);
 ```
 
-## Building
+## Building and Usage
 
 brigen is written in C# and requires .NET 8 or newer.
 The repository contains a solution that can be opened directly using Visual Studio.
@@ -99,10 +99,17 @@ The repository contains a solution that can be opened directly using Visual Stud
 Alternatively:
 
 ```bash
-dotnet publish
+dotnet publish -o bin
 ```
 
-Will produce a standalone (ahead-of-time compiled) executable in `src/bin/...`.
+Will produce a standalone (ahead-of-time compiled) executable in `bin/`.
+Example:
+
+```bash
+./bin/brigen --in=MyLib.interface --csharp --python --java
+```
+
+For help, see command `brigen --help`.
 
 ## FAQ
 
