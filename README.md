@@ -10,6 +10,8 @@ The generated API can be internally implemented in a modern C++ standard.
 
 <img src="https://github.com/cemderv/brigen/blob/main/misc/brigen_diag.png?raw=true" width="600">
 
+[![dotnet build](https://github.com/cemderv/brigen/actions/workflows/dotnet.yml/badge.svg)](https://github.com/cemderv/brigen/actions/workflows/dotnet.yml)
+
 ## Example
 
 ```cpp
