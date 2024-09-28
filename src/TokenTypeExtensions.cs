@@ -13,6 +13,8 @@ internal static class TokenTypeExtensions
           TokenType.Colon => ":",
           TokenType.LeftParen => "(",
           TokenType.RightParen => ")",
+          TokenType.LeftBrace => "{",
+          TokenType.RightBrace => "}",
           TokenType.IntLiteral => "<int>",
           TokenType.Identifier => "<identifier>",
           TokenType.Dot => ".",

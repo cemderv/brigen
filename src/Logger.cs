@@ -11,7 +11,16 @@ public static class Logger
 
     public static void Log(string message) => Write?.Invoke(message);
 
-    public static void LogLine(string message) => Write?.Invoke(message + '\n');
+    public static void LogLine(string message, ConsoleColor? color = null)
+    {
+        if (color != null)
+            PushColor(color.Value);
+
+        Write?.Invoke(message + '\n');
+
+        if (color != null)
+            PopColor();
+    }
 
     public static void LogLine() => Write?.Invoke("\n");
 

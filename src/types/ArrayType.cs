@@ -4,7 +4,7 @@ namespace brigen.types;
 
 public sealed class ArrayType : IDataType
 {
-    private static readonly Dictionary<IDataType, ArrayType> _map = new();
+    private static readonly Dictionary<IDataType, ArrayType> _map = [];
 
     private ArrayType(IDataType elementType)
     {

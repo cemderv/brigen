@@ -1,15 +1,9 @@
 ﻿namespace brigen;
 
-public sealed class TempVarNameGen
+public sealed class TempVarNameGen(string prefix)
 {
-    private readonly List<string> _names;
-    private readonly string _prefix;
-
-    public TempVarNameGen(string prefix)
-    {
-        _prefix = prefix;
-        _names = new List<string>(256);
-    }
+    private readonly List<string> _names = new(256);
+    private readonly string _prefix = prefix;
 
     public string this[int index] => _names[index];
 

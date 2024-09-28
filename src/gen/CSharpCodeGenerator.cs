@@ -46,6 +46,9 @@ public sealed class CSharpCodeGenerator(Module module) : CodeGenerator(module)
 
     public override void Generate()
     {
+        Logger.LogCategoryGenerationStatus("C#");
+        Logger.LogFileGenerationStatus("P/Invoke File", Module.Paths.CSharpFile);
+
         Directory.CreateDirectory(Path.GetDirectoryName(Module.Paths.CSharpFile)!);
 
         var w = new Writer();
@@ -451,9 +454,9 @@ public sealed class CSharpCodeGenerator(Module module) : CodeGenerator(module)
 
             if (prop.HasGetter)
             {
-                FunctionDecl func = clss.GetFunctionForProperty(prop, PropertyDecl.PropMask.Getter) ?? throw new CompileError(
+                FunctionDecl func = clss.GetFunctionForProperty(prop, PropertyDecl.PropMask.Getter) ?? throw CompileError.Internal(
                       $"Property {prop.Name}: could not obtain respective getter function.",
-                      prop.Range, ErrorCategory.Internal);
+                      prop.Range);
 
                 w.WriteLine("get");
                 w.OpenBrace();
@@ -479,9 +482,9 @@ public sealed class CSharpCodeGenerator(Module module) : CodeGenerator(module)
 
             if (prop.HasSetter)
             {
-                FunctionDecl func = clss.GetFunctionForProperty(prop, PropertyDecl.PropMask.Setter) ?? throw new CompileError(
+                FunctionDecl func = clss.GetFunctionForProperty(prop, PropertyDecl.PropMask.Setter) ?? throw CompileError.Internal(
                       $"Property {prop.Name}: could not obtain respective setter function.",
-                      prop.Range, ErrorCategory.Internal);
+                      prop.Range);
 
                 w.WriteLine("set");
                 w.OpenBrace();
@@ -560,7 +563,15 @@ public sealed class CSharpCodeGenerator(Module module) : CodeGenerator(module)
 
         w.WriteLine();
 
-        w.WriteLine("public override bool Equals(object obj)");
+        bool usingNullRefs = Module.GetBoolVariable(VariableNames.CSharpNullRef, false);
+
+        w.Write($"public override bool Equals(object");
+
+        if (usingNullRefs)
+            w.Write("?");
+
+        w.WriteLine($" obj)");
+
         w.OpenBrace();
         w.WriteLine($"return obj is {name} other && this == other;");
         w.CloseBrace();

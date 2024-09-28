@@ -1,0 +1,41 @@
+module myLib;
+
+set companyid somecompany
+set company SomeCompany
+set csharp_nullref true
+
+enum SomeEnum
+{
+  Member1 = 1,
+  Member2 = 2,
+}
+
+struct SomeStruct2
+{
+  float F;
+}
+
+struct SomeStruct1
+{
+  int X;
+  int Y;
+  SomeStruct2 S;
+}
+
+delegate int CallbackThatSquaresX(int x);
+
+class SomeClass1
+{
+  ctor Create(int x);
+
+  func int Add(int a, int b);
+
+  func void CallMe(CallbackThatSquaresX callback);
+
+  get int SomeReadOnlyProperty;
+
+  set int SomeWriteOnlyProperty;
+
+  get set int SomeProperty;
+}
+

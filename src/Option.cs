@@ -2,6 +2,8 @@
 
 internal record Option(string Name, string Description, bool IsSwitch)
 {
+    public const string SwitchPrefix = "--";
+
     public static void PrintOptions(IReadOnlyList<Option> options, int indent = 2)
     {
         string tabString = new(' ', indent);
@@ -11,7 +13,7 @@ internal record Option(string Name, string Description, bool IsSwitch)
 
         string GetOptionDisplayName(Option opt)
         {
-            string str = opt.IsSwitch ? $"-{opt.Name}" : $"-{opt.Name}{valueAssignmentStr}";
+            string str = opt.IsSwitch ? $"{SwitchPrefix}{opt.Name}" : $"{SwitchPrefix}{opt.Name}{valueAssignmentStr}";
             str = tabString + str;
             return str;
         }
@@ -43,13 +45,13 @@ internal record Option(string Name, string Description, bool IsSwitch)
     }
 
     public static readonly Dictionary<string, Option> AllOptions = new()
-  {
-    { Names.InFilename, new(Names.InFilename, "The input interface file", false) },
-    { Names.OutDir, new(Names.OutDir, "The output directory", false) },
-    { Names.GenCSharp, new Option(Names.GenCSharp, "Generate C# bindings", true) },
-    { Names.GenPython, new Option(Names.GenPython, "Generate Python bindings", true) },
-    { Names.GenJava, new Option(Names.GenJava, "Generate Java bindings", true) },
-  };
+    {
+        { Names.InFilename, new(Names.InFilename, "The input interface file", false) },
+        { Names.OutDir, new(Names.OutDir, "The output directory", false) },
+        { Names.GenCSharp, new Option(Names.GenCSharp, "Generate C# bindings", true) },
+        { Names.GenPython, new Option(Names.GenPython, "Generate Python bindings", true) },
+        { Names.GenJava, new Option(Names.GenJava, "Generate Java bindings", true) },
+    };
 
     public IEnumerable<Option> Options => AllOptions.Values;
 }

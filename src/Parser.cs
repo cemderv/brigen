@@ -1,5 +1,4 @@
 ﻿using brigen.decl;
-using brigen.Properties;
 using brigen.types;
 using System.Diagnostics;
 using System.Text;
@@ -8,13 +7,10 @@ namespace brigen;
 
 public sealed class Parser
 {
-    private static readonly List<Token> _defaultTokenList = new();
+    private static readonly List<Token> _defaultTokenList = [];
 
-    private readonly Stack<int> _offsideStack = new(16);
     private int _tokenIdx;
     private IReadOnlyList<Token> _tokens = _defaultTokenList;
-
-    private int Offside => _offsideStack.Peek();
 
     private Token Tk => _tokens![_tokenIdx];
     private Token PrevTk => _tokens![_tokenIdx - 1];
@@ -25,10 +21,9 @@ public sealed class Parser
         _tokens = tokens;
         _tokenIdx = 0;
 
-        List<Decl> decls = new();
-        using OffsidePusher offsidePusher = PushOffside();
+        List<Decl> decls = [];
 
-        while (Tk.Column >= Offside)
+        while (!Tk.IsEof)
         {
             CommentDecl? comment = TryParseCommentDecl();
             AttributeDecl? attrib = TryParseAttributeDecl();
@@ -42,13 +37,13 @@ public sealed class Parser
                     Strings.KwClass => ParseClassDecl(),
                     Strings.KwDelegate => ParseDelegateDecl(),
                     Strings.KwModule => ParseModuleDecl(),
-                    Strings.KwImport => ParseImportDecl(),
                     Strings.KwSet => ParseSetVariableDecl(),
                     _ => throw CompileError.UnexpectedTopLevelToken(Tk)
                 };
 
                 decl.Comment = comment;
                 decl.Attribute = attrib;
+
                 decls.Add(decl);
             }
             else
@@ -85,12 +80,11 @@ public sealed class Parser
         ExpectIdentifier();
         string enumName = ConsumeToken();
 
-        Expect(TokenType.Equal, true);
-        using OffsidePusher offsidePusher = PushOffside();
+        Expect(TokenType.LeftBrace, true);
 
-        var members = new List<EnumMemberDecl>();
+        List<EnumMemberDecl> members = [];
 
-        while (Tk.Column >= Offside)
+        while (!Tk.IsEof && !Tk.Is(TokenType.RightBrace))
         {
             CommentDecl? comment = TryParseCommentDecl();
             AttributeDecl? attrib = TryParseAttributeDecl();
@@ -106,8 +100,15 @@ public sealed class Parser
                 memberValue = ConsumeNumber();
             }
 
+            if (!Tk.Is(TokenType.RightBrace))
+            {
+                Expect(TokenType.Comma, true);
+            }
+
             members.Add(new EnumMemberDecl(memberName, memberRange, memberValue) { Comment = comment, Attribute = attrib });
         }
+
+        Expect(TokenType.RightBrace, true);
 
         return new EnumDecl(enumName, tkSaved.Range, members);
     }
@@ -119,46 +120,48 @@ public sealed class Parser
         Advance();
         ExpectIdentifier();
         string structName = ConsumeToken();
-        Expect(TokenType.Equal, true);
-
-        using OffsidePusher offsidePusher = PushOffside();
+        Expect(TokenType.LeftBrace, true);
 
         var fields = new List<StructFieldDecl>();
 
-        while (Tk.Column >= Offside)
+        while (!Tk.IsEof && !Tk.Is(TokenType.RightBrace))
         {
             CommentDecl? comment = TryParseCommentDecl();
             AttributeDecl? attrib = TryParseAttributeDecl();
+
+            IDataType fieldType = ParseType();
 
             ExpectIdentifier();
             CodeRange nameRange = Tk.Range;
             string fieldName = ConsumeToken();
 
-            Expect(TokenType.Colon, true);
-            IDataType fieldType = ParseType();
+            Expect(TokenType.Semicolon, true);
 
-            if (Tk.Is(TokenType.Comma))
-                Advance();
-
-            fields.Add(
-              new StructFieldDecl(fieldName, nameRange, fieldType) { Comment = comment, Attribute = attrib });
+            fields.Add(new StructFieldDecl(fieldName, nameRange, fieldType)
+            {
+                Comment = comment,
+                Attribute = attrib
+            });
         }
+
+        VerifyNotEof();
+
+        Expect(TokenType.RightBrace, true);
 
         return new StructDecl(structName, structTk.Range, fields);
     }
 
     private List<FunctionParamDecl> ParseFuncParams()
     {
-        var list = new List<FunctionParamDecl>();
+        List<FunctionParamDecl> list = [];
 
         while (!Tk.IsEof && !Tk.Is(TokenType.RightParen))
         {
+            IDataType type = ParseType();
+
             ExpectIdentifier();
             CodeRange nameRange = Tk.Range;
             string name = ConsumeToken();
-
-            Expect(TokenType.Colon, true);
-            IDataType type = ParseType();
 
             list.Add(new FunctionParamDecl(name, nameRange, type));
 
@@ -168,6 +171,7 @@ public sealed class Parser
                 break;
         }
 
+        VerifyNotEof();
         Expect(TokenType.RightParen);
 
         return list;
@@ -181,11 +185,13 @@ public sealed class Parser
         IDataType type = UnresolvedType.Get(name);
 
         if (Tk.Is(TokenType.Keyword))
+        {
             if (Tk.Value == Strings.KwArray)
             {
                 Advance();
                 type = ArrayType.Get(type);
             }
+        }
 
         return type;
     }
@@ -202,24 +208,25 @@ public sealed class Parser
         var modifiers = ClassDecl.Modifier.None;
 
         if (Tk.Type == TokenType.Keyword)
+        {
             do
             {
                 ClassDecl.Modifier modifier = Tk.Value switch
                 {
                     Strings.KwStatic => ClassDecl.Modifier.Static,
-                    _ => throw new CompileError(string.Format(Messages.UnknownClassModifier, Tk.Value), Tk.Range,
-                      ErrorCategory.Syntax)
+                    _ => throw CompileError.UnknownClassModifier(Tk)
                 };
 
                 if (modifiers.HasFlag(modifier))
-                    throw new CompileError(string.Format(Messages.ClassModifierSpecifiedMultipleTimes, Tk.Value), Tk.Range);
+                    throw new CompileError($"Class modifier '{Tk.Value}' specified multiple times", Tk.Range);
 
                 modifiers |= modifier;
                 Advance();
             } while (!Tk.IsEof && !Tk.Is(TokenType.Keyword));
+        }
 
-        var functions = new List<FunctionDecl>();
-        var properties = new List<PropertyDecl>();
+        List<FunctionDecl> functions = [];
+        List<PropertyDecl> properties = [];
 
         if (Tk.Is(TokenType.Semicolon))
         {
@@ -227,11 +234,9 @@ public sealed class Parser
         }
         else
         {
-            Expect(TokenType.Equal, true);
+            Expect(TokenType.LeftBrace, true);
 
-            using OffsidePusher offsidePusher = PushOffside();
-
-            while (Tk.Column >= Offside)
+            while (!Tk.IsEof && !Tk.Is(TokenType.RightBrace))
             {
                 CommentDecl? comment = TryParseCommentDecl();
                 AttributeDecl? attrib = TryParseAttributeDecl();
@@ -255,6 +260,8 @@ public sealed class Parser
                     break;
                 }
             }
+
+            Expect(TokenType.RightBrace, true);
         }
 
         return new ClassDecl(className, classNameRange, functions, properties, modifiers);
@@ -265,6 +272,8 @@ public sealed class Parser
         Debug.Assert(Tk.Value == Strings.KwDelegate);
         Advance();
 
+        IDataType type = ParseType();
+
         ExpectIdentifier();
         CodeRange nameRange = Tk.Range;
         string name = ConsumeToken();
@@ -273,8 +282,7 @@ public sealed class Parser
         List<FunctionParamDecl> pars = ParseFuncParams();
         Expect(TokenType.RightParen, true);
 
-        Expect(TokenType.Colon, true);
-        IDataType type = ParseType();
+        Expect(TokenType.Semicolon, true);
 
         return new DelegateDecl(name, nameRange, pars, type);
     }
@@ -310,14 +318,14 @@ public sealed class Parser
         Token tkSaved = Tk;
         Advance();
 
+        IDataType returnType = isCtor ? PrimitiveType.Void : ParseType();
+
         ExpectIdentifier();
         string funcName = ConsumeToken();
 
         Expect(TokenType.LeftParen, true);
         List<FunctionParamDecl> pars = ParseFuncParams();
         Expect(TokenType.RightParen, true);
-
-        IDataType returnType = PrimitiveType.Void;
 
         if (!isCtor)
         {
@@ -326,10 +334,9 @@ public sealed class Parser
                 flags |= FunctionFlags.Const;
                 Advance();
             }
-
-            Expect(TokenType.Colon, true);
-            returnType = ParseType();
         }
+
+        Expect(TokenType.Semicolon, true);
 
         return new FunctionDecl(funcName, tkSaved.Range, flags, returnType, pars);
     }
@@ -369,15 +376,15 @@ public sealed class Parser
         sum = sum.Trim();
 
         if (!string.IsNullOrEmpty(sum))
-            throw new CompileError(Messages.GetSetDefinedMultipleTimes, Tk.Range);
+            throw new CompileError("get/set defined multiple times for property", Tk.Range);
+
+        ExpectIdentifier();
+        IDataType type = ParseType();
 
         ExpectIdentifier();
         string propName = ConsumeToken();
 
-        Expect(TokenType.Colon, true);
-
-        ExpectIdentifier();
-        IDataType type = ParseType();
+        Expect(TokenType.Semicolon, true);
 
         return new PropertyDecl(propName, tkSaved.Range, mask, type);
     }
@@ -391,20 +398,9 @@ public sealed class Parser
         ExpectIdentifier();
         var moduleName = ConsumeToken();
 
+        Expect(TokenType.Semicolon, true);
+
         return new ModuleDecl(moduleName, range);
-    }
-
-    private ImportDecl ParseImportDecl()
-    {
-        Debug.Assert(Tk.Value == Strings.KwImport);
-        Advance();
-
-        var range = Tk.Range;
-        Expect(TokenType.String);
-
-        var moduleName = ConsumeToken();
-
-        return new ImportDecl(moduleName, range);
     }
 
     private SetVariableDecl ParseSetVariableDecl()
@@ -452,19 +448,30 @@ public sealed class Parser
             if (Tk.Is(TokenType.Identifier))
             {
                 throw new CompileError(
-                  string.Format(Messages.ExpectedTkButEncounteredIdentifier, Tk.Type.GetDisplayString()),
-                  Tk.Range, ErrorCategory.Syntax);
+                  $"Expected '{type.GetDisplayString()}', but encountered an identifier instead.",
+                  Tk.Range);
             }
             else
             {
-                throw new CompileError(
-                  string.Format(Messages.ExpectedTkButEncounteredTk, type.GetDisplayString(), Tk.Type.GetDisplayString()),
-                  Tk.Range, ErrorCategory.Syntax);
+                if (type == TokenType.Identifier)
+                {
+                    throw new CompileError(
+                      $"Expected an identifier, but encountered '{Tk.Type.GetDisplayString()}' instead.",
+                      Tk.Range);
+                }
+                else
+                {
+                    throw new CompileError(
+                      $"Expected '{type.GetDisplayString()}', but encountered '{Tk.Type.GetDisplayString()}' instead.",
+                      Tk.Range);
+                }
             }
         }
 
         if (advance)
+        {
             Advance();
+        }
     }
 
     private void ExpectEitherOr(TokenType either, TokenType or, bool advance = false)
@@ -472,16 +479,20 @@ public sealed class Parser
         if (!Tk.Is(either) && !Tk.Is(or))
         {
             throw new CompileError(
-              string.Format(Messages.ExpectedEitherTkOrTk, either.GetDisplayString(), or.GetDisplayString()),
-              Tk.Range, ErrorCategory.Syntax);
+              $"Expected either token type '{either.GetDisplayString()}' or '{or.GetDisplayString()}'.",
+              Tk.Range);
         }
 
         if (advance)
+        {
             Advance();
+        }
     }
 
     private void ExpectIdentifier(bool advance = false)
-      => Expect(TokenType.Identifier, advance);
+    {
+        Expect(TokenType.Identifier, advance);
+    }
 
     private string ConsumeToken()
     {
@@ -501,11 +512,10 @@ public sealed class Parser
     private void VerifyNotEof()
     {
         if (Tk.IsEof)
-            throw new CompileError(Messages.UnexpectedEof, PrevTk.Range, ErrorCategory.Syntax);
+        {
+            throw CompileError.UnexpectedEof(PrevTk);
+        }
     }
 
-    private void Advance()
-      => ++_tokenIdx;
-
-    private OffsidePusher PushOffside() => new(_offsideStack, Tk.Column);
+    private void Advance() => ++_tokenIdx;
 }

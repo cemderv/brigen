@@ -9,18 +9,18 @@ namespace brigen.gen;
 public sealed class CppCodeGenerator : NativeCodeGenerator
 {
     private static readonly Dictionary<IDataType, string> _primTypeNameTable = new()
-  {
-    { PrimitiveType.Byte, "uint8_t" },
-    { PrimitiveType.Int, "int32_t" },
-    { PrimitiveType.Short, "int16_t" },
-    { PrimitiveType.Long, "int64_t" },
-    { PrimitiveType.Bool, Strings.CppBool32TypeName },
-    { PrimitiveType.Float, "float" },
-    { PrimitiveType.Double, "double" },
-    { PrimitiveType.String, "const char*" },
-    { PrimitiveType.Handle, "void*" },
-    { PrimitiveType.Void, "void" },
-  };
+    {
+        { PrimitiveType.Byte, "uint8_t" },
+        { PrimitiveType.Int, "int32_t" },
+        { PrimitiveType.Short, "int16_t" },
+        { PrimitiveType.Long, "int64_t" },
+        { PrimitiveType.Bool, Strings.CppBool32TypeName },
+        { PrimitiveType.Float, "float" },
+        { PrimitiveType.Double, "double" },
+        { PrimitiveType.String, "const char*" },
+        { PrimitiveType.Handle, "void*" },
+        { PrimitiveType.Void, "void" },
+    };
 
     public enum NameContext
     {
@@ -449,13 +449,13 @@ public sealed class CppCodeGenerator : NativeCodeGenerator
         { "${DROP_IMPL}", NameResolution.GetSpecialBuiltInFunctionName(SpecialCppBuiltInFunction.DropImpl, Module) }
       };
 
-            GenerateTemplateString(w, Properties.Resources.TS_ClassPrereqs, replacements);
+            GenerateTemplateString(w, TemplateStrings.ClassPrereqs, replacements);
             w.WriteLine();
         }
 
         if (Module.AllEnums.Any(e => e.IsFlags))
         {
-            GenerateTemplateString(w, Properties.Resources.TS_CppDefineEnumOps, null);
+            GenerateTemplateString(w, TemplateStrings.CppDefineEnumOps, null);
             w.WriteLine();
         }
 
@@ -494,7 +494,7 @@ public sealed class CppCodeGenerator : NativeCodeGenerator
         if (Module.CppGenStdHash)
             GenerateStdHashImplementationsForAllStructs(w);
 
-        GenerateTemplateString(w, Properties.Resources.TS_CppUndefs, null);
+        GenerateTemplateString(w, TemplateStrings.CppUndefs, null);
         EndCHeader(w);
         FinishFile(w, Module.Paths.CppHeader, string.Empty);
     }
@@ -510,7 +510,7 @@ public sealed class CppCodeGenerator : NativeCodeGenerator
         w.WriteLine("#include <cstdint>");
         w.WriteLine();
 
-        GenerateTemplateString(w, Properties.Resources.TS_CppBool32, null);
+        GenerateTemplateString(w, TemplateStrings.CppBool32, null);
         w.WriteLine();
 
         w.SaveContentsToDisk(Module.Paths.CppBool32Header);
@@ -612,15 +612,15 @@ public sealed class CppCodeGenerator : NativeCodeGenerator
         { "${DROP_IMPL}", NameResolution.GetSpecialBuiltInFunctionName(SpecialCppBuiltInFunction.DropImpl, Module) }
       };
 
-            GenerateTemplateString(w, Properties.Resources.TS_ObjectImplBase, replacements);
+            GenerateTemplateString(w, TemplateStrings.ObjectImplBase, replacements);
             w.WriteNewlineIfWrittenAnythingAndResetMarker();
         }
 
-        GenerateTemplateString(w, Properties.Resources.TS_GetArrayHelper, null);
+        GenerateTemplateString(w, TemplateStrings.GetArrayHelper, null);
         w.WriteNewlineIfWrittenAnythingAndResetMarker();
-        GenerateTemplateString(w, Properties.Resources.TS_CppInvokeFunction, null);
+        GenerateTemplateString(w, TemplateStrings.CppInvokeFunction, null);
         w.WriteNewlineIfWrittenAnythingAndResetMarker();
-        GenerateTemplateString(w, Properties.Resources.TS_CppScopeGuard, null);
+        GenerateTemplateString(w, TemplateStrings.CppScopeGuard, null);
 
         EndNamespace(w);
 

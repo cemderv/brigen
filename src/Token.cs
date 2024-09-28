@@ -12,6 +12,8 @@ public enum TokenType
     Colon,
     LeftParen,
     RightParen,
+    LeftBrace,
+    RightBrace,
     IntLiteral,
     Identifier,
     Dot,

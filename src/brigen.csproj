@@ -9,6 +9,12 @@
     <IsPackable>false</IsPackable>
     <Platforms>x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <PublishTrimmed>True</PublishTrimmed>
+    <PublishAot>True</PublishAot>
+    <PackAsTool>True</PackAsTool>
+    <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AssemblyVersion>0.5</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -19,28 +25,19 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ClangSharp" Version="3.8.0" />
-    <PackageReference Include="ClangSharp.Interop" Version="13.0.0-beta1" />
-    <PackageReference Include="libClangSharp" Version="13.0.0-beta1" />
-    <PackageReference Include="libClangSharp.runtime.win-x64" Version="13.0.0-beta1" />
-    <PackageReference Include="libClangSharp.runtime.ubuntu.20.04-x64" Version="13.0.0-beta1" />
-    <PackageReference Include="libclang" Version="13.0.1" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <WarningLevel>7</WarningLevel>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <WarningLevel>7</WarningLevel>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="Properties\Messages.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <PackageReference Include="ClangSharp" Version="18.1.0.2" />
+    <PackageReference Include="ClangSharp.Interop" Version="18.1.0.2" />
   </ItemGroup>
 
 </Project>

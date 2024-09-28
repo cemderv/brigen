@@ -2,15 +2,15 @@
 
 namespace brigen.decl;
 
-public sealed class CommentDecl : Decl
+public sealed partial class CommentDecl : Decl
 {
     private readonly string[] _contentLines;
-    private readonly List<(string, string)> _parameterDescriptions = new();
+    private readonly List<(string, string)> _parameterDescriptions = [];
 
     public CommentDecl(CodeRange range, string content)
       : base("<comment>", range)
     {
-        Regex regex = new(@"@param ([a-zA-Z_0-9]+) (.+)$");
+        Regex regex = CommentRegex();
 
         Match match = regex.Match(content);
 
@@ -25,7 +25,7 @@ public sealed class CommentDecl : Decl
 
         content = content.Trim(' ', '\r', '\n');
 
-        _contentLines = content.Contains('\n') ? content.Split(content, '\n') : new[] { content };
+        _contentLines = content.Contains('\n') ? content.Split(content, '\n') : [content];
     }
 
     public IReadOnlyList<string> ContentLines => _contentLines;
@@ -35,4 +35,7 @@ public sealed class CommentDecl : Decl
     protected override void OnVerify(Module module)
     {
     }
+
+    [GeneratedRegex(@"@param ([a-zA-Z_0-9]+) (.+)$")]
+    private static partial Regex CommentRegex();
 }

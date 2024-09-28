@@ -1,35 +1,31 @@
 ﻿namespace brigen.decl;
 
-public class SetVariableDecl : Decl
+public class SetVariableDecl(string variableName, CodeRange range, object variableValue)
+    : Decl(variableName, range)
 {
     private static readonly Dictionary<string, Type> _varTypeTable = new()
   {
-    { VarNames.CompanyId, typeof(string) },
-    { VarNames.Company, typeof(string) },
-    { VarNames.Description, typeof(string) },
-    { VarNames.Version, typeof(string) },
-    { VarNames.EnableClangFormat, typeof(bool) },
-    { VarNames.ClangFormatLocation, typeof(string) },
-    { VarNames.NativePublicDir, typeof(string) },
-    { VarNames.NativePrivateDir, typeof(string) },
-    { VarNames.CppCaseStyle, typeof(string) },
-    { VarNames.CppVectorSupport, typeof(bool) },
-    { VarNames.CppGenStdHash, typeof(bool) },
-    { VarNames.HashFirstPrime, typeof(int) },
-    { VarNames.HashSecondPrime, typeof(int) },
-    { VarNames.CSharpOutDir, typeof(string) },
-    { VarNames.CSharpLibName, typeof(string) },
-    { VarNames.PythonCppFile, typeof(string) },
-    { VarNames.PythonLibName, typeof(string) },
-    { VarNames.JavaOutDir, typeof(string) },
-    { VarNames.JavaLibName, typeof(string) },
+    { VariableNames.CompanyId, typeof(string) },
+    { VariableNames.Company, typeof(string) },
+    { VariableNames.Description, typeof(string) },
+    { VariableNames.Version, typeof(string) },
+    { VariableNames.EnableClangFormat, typeof(bool) },
+    { VariableNames.ClangFormatLocation, typeof(string) },
+    { VariableNames.NativePublicDir, typeof(string) },
+    { VariableNames.NativePrivateDir, typeof(string) },
+    { VariableNames.CppCaseStyle, typeof(string) },
+    { VariableNames.CppVectorSupport, typeof(bool) },
+    { VariableNames.CppGenStdHash, typeof(bool) },
+    { VariableNames.HashFirstPrime, typeof(int) },
+    { VariableNames.HashSecondPrime, typeof(int) },
+    { VariableNames.CSharpOutDir, typeof(string) },
+    { VariableNames.CSharpLibName, typeof(string) },
+    { VariableNames.CSharpNullRef, typeof(bool) },
+    { VariableNames.PythonCppFile, typeof(string) },
+    { VariableNames.PythonLibName, typeof(string) },
+    { VariableNames.JavaOutDir, typeof(string) },
+    { VariableNames.JavaLibName, typeof(string) },
   };
-
-    public SetVariableDecl(string variableName, CodeRange range, object variableValue)
-      : base(variableName, range)
-    {
-        VariableValue = variableValue;
-    }
 
     protected override void OnVerify(Module module)
     {
@@ -46,5 +42,5 @@ public class SetVariableDecl : Decl
         }
     }
 
-    public object VariableValue { get; }
+    public object VariableValue { get; } = variableValue;
 }

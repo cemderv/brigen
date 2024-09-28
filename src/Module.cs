@@ -7,7 +7,6 @@ public sealed class Module
 {
     private readonly List<Decl> _decls;
     private readonly Dictionary<string, object> _variables;
-    private readonly List<ImportDecl> _importDecls;
     private readonly List<IDataType> _dataTypes;
     private readonly List<ClassDecl> _allClasses;
     private readonly List<DelegateDecl> _allDelegates;
@@ -27,16 +26,12 @@ public sealed class Module
 
         ProcessHeaderDecls();
 
-        _importDecls = _decls.OfType<ImportDecl>().ToList();
-        foreach (var importDecl in _importDecls)
-            importDecl.Verify(this);
-
         _variables = new Dictionary<string, object>
-    {
-      { VarNames.CSharpLibName, $"{Name}NET" },
-      { VarNames.PythonLibName, $"py{Name}" },
-      { VarNames.JavaLibName, $"j{Name}" },
-    };
+        {
+            { VariableNames.CSharpLibName, $"{Name}NET" },
+            { VariableNames.PythonLibName, $"py{Name}" },
+            { VariableNames.JavaLibName, $"j{Name}" },
+        };
 
         ExtractVariables();
 
@@ -70,40 +65,12 @@ public sealed class Module
         if (_decls[0] is not ModuleDecl moduleDecl)
         {
             throw new CompileError("The first declaration must be a module declaration. Example: 'module myLib'",
-              _decls[0].Range, ErrorCategory.General);
+              _decls[0].Range);
         }
 
         moduleDecl.Verify(this);
 
         Name = moduleDecl.Name;
-
-        // Verify that these imports are the only imports.
-        // Something like this should not be allowed:
-        // <importdecl>
-        // <importdecl>
-        // <someotherdecl>
-        // <importdecl>     <-- Not allowed. All imports should be at the top.
-        int idxOfFirstNonImportDecl = -1;
-        for (int i = 1; i < _decls.Count; ++i)
-        {
-            var decl = _decls[i];
-            if (decl is not ImportDecl)
-            {
-                idxOfFirstNonImportDecl = i;
-                break;
-            }
-        }
-
-        for (int i = idxOfFirstNonImportDecl + 1; i < _decls.Count; ++i)
-        {
-            var decl = _decls[i];
-            if (decl is ImportDecl importDecl)
-            {
-                throw new CompileError(
-                  "Import declarations must be stated before other types of declarations, but after module declarations.",
-                  importDecl.Range, ErrorCategory.General);
-            }
-        }
     }
 
     private void ExtractVariables()
@@ -135,20 +102,20 @@ public sealed class Module
 
     public string Name { get; private set; } = string.Empty;
     public string UpperName => Name.ToUpperInvariant();
-    public string CompanyId => GetStringVariable(VarNames.CompanyId, string.Empty);
-    public string Company => GetStringVariable(VarNames.Company, string.Empty);
-    public string Description => GetStringVariable(VarNames.Description, string.Empty);
+    public string CompanyId => GetStringVariable(VariableNames.CompanyId, string.Empty);
+    public string Company => GetStringVariable(VariableNames.Company, string.Empty);
+    public string Description => GetStringVariable(VariableNames.Description, string.Empty);
     public ModuleVersion Version { get; private set; } = new(1, 0, 0, string.Empty);
-    public bool EnableClangFormat => GetBoolVariable(VarNames.EnableClangFormat, false);
-    public string ClangFormatLocation => GetStringVariable(VarNames.ClangFormatLocation, string.Empty);
+    public bool EnableClangFormat => GetBoolVariable(VariableNames.EnableClangFormat, false);
+    public string ClangFormatLocation => GetStringVariable(VariableNames.ClangFormatLocation, string.Empty);
     public CaseStyle CppCaseStyle { get; private set; } = CaseStyle.PascalCase;
-    public bool CppVectorSupport => GetBoolVariable(VarNames.CppVectorSupport, true);
-    public bool CppGenStdHash => GetBoolVariable(VarNames.CppGenStdHash, true);
-    public int HashFirstPrime => GetIntVariable(VarNames.HashFirstPrime, 17);
-    public int HashSecondPrime => GetIntVariable(VarNames.HashSecondPrime, 23);
-    public string CSharpLibName => GetStringVariable(VarNames.CSharpLibName, "");
-    public string PythonLibName => GetStringVariable(VarNames.PythonLibName, "");
-    public string JavaLibName => GetStringVariable(VarNames.JavaLibName, "");
+    public bool CppVectorSupport => GetBoolVariable(VariableNames.CppVectorSupport, true);
+    public bool CppGenStdHash => GetBoolVariable(VariableNames.CppGenStdHash, true);
+    public int HashFirstPrime => GetIntVariable(VariableNames.HashFirstPrime, 17);
+    public int HashSecondPrime => GetIntVariable(VariableNames.HashSecondPrime, 23);
+    public string CSharpLibName => GetStringVariable(VariableNames.CSharpLibName, "");
+    public string PythonLibName => GetStringVariable(VariableNames.PythonLibName, "");
+    public string JavaLibName => GetStringVariable(VariableNames.JavaLibName, "");
 
     public string DllExportApi { get; }
     public string CallConvApi { get; }
@@ -184,9 +151,7 @@ public sealed class Module
     public Decl? FindSimilarlyNamedDecl(string name)
     {
         static bool AreStringsSimilar(string lhs, string rhs)
-        {
-            return StringExtensions.LevenshteinDistanceNormalized(lhs, rhs) < 0.5f;
-        }
+            => StringExtensions.LevenshteinDistanceNormalized(lhs, rhs) < 0.5f;
 
         return _decls.FirstOrDefault(d => AreStringsSimilar(d.Name, name));
     }

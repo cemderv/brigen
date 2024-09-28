@@ -29,7 +29,7 @@ public sealed class FunctionDecl : Decl
         foreach (FunctionParamDecl param in _parameters)
             param.ParentDecl = this;
 
-        FunctionHelper.DetermineFuncParamIndices(_parameters);
+        DetermineFuncParamIndices(_parameters);
     }
 
     public bool IsDefaultCtorOfItsClass
@@ -178,5 +178,26 @@ public sealed class FunctionDecl : Decl
         sb.Append(')');
 
         return sb.ToString();
+    }
+
+    internal static void DetermineFuncParamIndices(IEnumerable<FunctionParamDecl> pars)
+    {
+        int index = 0;
+        int cApiIndex = 0;
+
+        foreach (FunctionParamDecl par in pars)
+        {
+            par.Index = index;
+            par.IndexInCApi = cApiIndex;
+
+            // If this is an array, increment the C-API index
+            // an additional time, because we have to account for the
+            // array size parameter.
+            if (par.Type.IsArray)
+                ++cApiIndex;
+
+            ++index;
+            ++cApiIndex;
+        }
     }
 }

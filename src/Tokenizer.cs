@@ -16,7 +16,6 @@ public sealed class Tokenizer
     Strings.KwArray,
     Strings.KwConst,
     Strings.KwModule,
-    Strings.KwImport,
     Strings.KwTrue,
     Strings.KwFalse,
   };
@@ -29,6 +28,8 @@ public sealed class Tokenizer
     { ':', TokenType.Colon },
     { '(', TokenType.LeftParen },
     { ')', TokenType.RightParen },
+    { '{', TokenType.LeftBrace },
+    { '}', TokenType.RightBrace },
     { '.', TokenType.Dot },
     { '#', TokenType.NumberSign },
     { '/', TokenType.ForwardSlash },
@@ -141,7 +142,7 @@ public sealed class Tokenizer
             var mergedRange = new CodeRange(startRange.Filename, startRange.Line,
               startRange.Start, endRange.End, startRange.StartColumn, endRange.EndColumn);
 
-            string value = _text.Substring(mergedRange.Start, mergedRange.End - mergedRange.Start);
+            string value = _text[mergedRange.Start..mergedRange.End];
             var newTk = new Token(value, TokenType.Identifier, mergedRange);
 
             int count = nlTk - t;

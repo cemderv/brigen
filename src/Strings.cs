@@ -14,7 +14,6 @@ internal static class Strings
     public const string KwArray = "array";
     public const string KwConst = "const";
     public const string KwModule = "module";
-    public const string KwImport = "import";
     public const string KwTrue = "true";
     public const string KwFalse = "false";
 
@@ -34,7 +33,7 @@ internal static class Strings
     ///   If a function has any of these prefixes, it counts as const.
     /// </summary>
     public static readonly string[] ConstMakerPrefixes =
-    {
-    "get", "Get", "is", "Is", "has", "Has", "contains", "Contains"
-  };
+    [
+        "get", "Get", "is", "Is", "has", "Has", "contains", "Contains"
+    ];
 }

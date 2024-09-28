@@ -2,74 +2,95 @@
 #define WITH_TRY_CATCH
 #endif
 
+using brigen.gen;
 using System.Reflection;
 
 namespace brigen;
 
 internal static class Program
 {
-    private const string _helpOptionName = "help";
-
     public static void Main(string[] args)
     {
-        //try
-        //{
+#if WITH_TRY_CATCH
+        try
+        {
+#endif
         Logger.Write += Console.Write;
         Logger.ColorRequested += color => Console.ForegroundColor = color;
 
-        ProgramArguments programArgs = new(args);
-
-        if (programArgs.Count == 0)
+        if (args.Length == 0)
         {
-            Logger.PushColor(ConsoleColor.Red);
-            Logger.LogLine("No arguments specified.");
-            Logger.PopColor();
+            Logger.LogLine("No arguments specified.", ConsoleColor.Red);
             PrintGeneralHelpString();
             return;
         }
 
-        if (programArgs.HasOption(_helpOptionName))
+        var settings = new Settings(args);
+
+        if (settings.IsHelp)
         {
             Option.PrintOptions([.. Option.AllOptions.Values]);
             return;
         }
 
-        var settings = ParseSettings(programArgs);
 
-        var compiler = new Compiler();
-        compiler.Compile(settings);
-        //}
-        //catch (Exception ex)
-        //{
-        //    Logger.LogLine(ex.Message);
-        //    Environment.ExitCode = 1;
-        //}
+        Compile(settings);
+#if WITH_TRY_CATCH
+        }
+        catch (Exception ex)
+        {
+            Logger.LogLine(ex.Message);
+            Environment.ExitCode = 1;
+        }
+#endif
     }
 
     private static void PrintGeneralHelpString()
     {
-        Logger.LogLine($"{Library.GetDisplayName(true)}");
-        Logger.LogLine($"Usage: brigen [options]");
-        Logger.LogLine($"For help on a specific command, enter \"brigen -help\"");
+        Logger.LogLine($@"{Library.GetDisplayName(true)}
+
+Usage: brigen [options]
+For help on a specific command, enter 'brigen {Option.SwitchPrefix}help'");
     }
 
-    public static Settings ParseSettings(ProgramArguments args)
+    private static void Compile(Settings settings)
     {
-        var settings = new Settings
-        {
-            InputFilename = args.GetValue(Names.InFilename),
-            OutputDirectory = args.TryGetValue(Names.OutDir, "out")
-        };
+        var fileContents = File.ReadAllText(settings.InputFilename);
 
-        if (args.HasOption(Names.GenCSharp))
-            settings.GenerateCSharpBindings = true;
+        var tokenizer = new Tokenizer();
+        tokenizer.Tokenize(fileContents, settings.InputFilename);
 
-        if (args.HasOption(Names.GenPython))
-            settings.GeneratePythonBindings = true;
+        IReadOnlyList<Token> tokens = tokenizer.Tokens;
 
-        if (args.HasOption(Names.GenJava))
-            settings.GenerateJavaBindings = true;
+        var parser = new Parser();
+        var decls = parser.Parse(tokens);
 
-        return settings;
+        var module = new Module(settings, decls);
+
+        Logger.LogLine($"Generating module {module.Name}");
+
+        // C++
+        new CppCodeGenerator(module).Generate();
+
+        // C
+        new CCodeGenerator(module).Generate();
+
+        // C#
+        if (module.Settings.GenerateCSharpBindings)
+            new CSharpCodeGenerator(module).Generate();
+
+        // Python
+        if (module.Settings.GeneratePythonBindings)
+            new PythonCodeGenerator(module).Generate();
+
+        // Java
+        if (module.Settings.GenerateJavaBindings)
+            new JavaCodeGenerator(module).Generate();
+
+        if (module.Settings.GenerateCMake)
+            new CMakeGenerator(module).Generate();
+
+        Logger.LogLine("--------------------");
+        Logger.LogLine("Compilation finished");
     }
 }

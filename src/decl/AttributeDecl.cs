@@ -1,6 +1,4 @@
-﻿using brigen.Properties;
-
-namespace brigen.decl;
+﻿namespace brigen.decl;
 
 public enum AttributeKind
 {
@@ -12,13 +10,8 @@ public enum AttributeKind
     OperatorDivide
 }
 
-public sealed class AttributeDecl : Decl
+public sealed class AttributeDecl(string name, CodeRange range) : Decl(name, range)
 {
-    public AttributeDecl(string name, CodeRange range)
-      : base(name, range)
-    {
-    }
-
     public AttributeKind Kind { get; private set; }
 
     protected override void OnVerify(Module module) =>
@@ -29,6 +22,6 @@ public sealed class AttributeDecl : Decl
           "op_subtract" => AttributeKind.OperatorSubtract,
           "op_multiply" => AttributeKind.OperatorMultiply,
           "op_divide" => AttributeKind.OperatorDivide,
-          _ => throw new CompileError(string.Format(Messages.InvalidAttribute, Name), Range)
+          _ => throw new CompileError($"Invalid attribute '{Name}' specified", Range)
       };
 }

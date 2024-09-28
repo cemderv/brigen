@@ -1,6 +1,6 @@
 ﻿namespace brigen;
 
-public static class VarNames
+public static class VariableNames
 {
     public const string CompanyId = "companyid";
     public const string Company = "company";
@@ -17,6 +17,7 @@ public static class VarNames
     public const string HashSecondPrime = "hashsecondprime";
     public const string CSharpOutDir = "csharp_outdir";
     public const string CSharpLibName = "csharp_libname";
+    public const string CSharpNullRef = "csharp_nullref";
     public const string PythonCppFile = "python_cppfile";
     public const string PythonLibName = "python_libname";
     public const string JavaOutDir = "java_outdir";

@@ -121,7 +121,7 @@ public sealed class CCodeGenerator : NativeCodeGenerator
         {
             w.Write($"namespace {Strings.CppInternalNamespace} ");
             w.WriteLine('{');
-            w.WriteLine(Properties.Resources.TS_CClassBuffer);
+            w.WriteLine(TemplateStrings.CClassBuffer);
             w.WriteLine('}');
             w.WriteLine();
         }

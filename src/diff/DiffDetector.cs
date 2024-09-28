@@ -213,7 +213,7 @@ internal sealed class DiffDetector
 
         endIdx += preambleEndMarker.Length;
 
-        return str.Substring(startIdx, endIdx - startIdx);
+        return str[startIdx..endIdx];
     }
 
     public List<FunctionInfo> GetExtraFunctionsForClass(DiffDetectorTarget target, ClassDecl clss)
@@ -252,9 +252,14 @@ internal sealed class DiffDetector
         }
 
         if (target == DiffDetectorTarget.ImplHeader)
+        {
             foreach (ClassInfo classInfo in _headerData.Classes)
                 CheckFunctions(classInfo.Functions);
-        else if (target == DiffDetectorTarget.ImplSource) CheckFunctions(_sourceData.Functions);
+        }
+        else if (target == DiffDetectorTarget.ImplSource)
+        {
+            CheckFunctions(_sourceData.Functions);
+        }
 
         return funcs;
     }

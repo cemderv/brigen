@@ -7,7 +7,7 @@ namespace brigen.gen;
 /// <summary>
 /// Handles Java code generation.
 /// </summary>
-public sealed class JavaCodeGenerator : CodeGenerator
+public sealed class JavaCodeGenerator(Module module) : CodeGenerator(module)
 {
     private const string JavaVmParamName = "vm";
     public const string CidsName = $"{Strings.ForbiddenIdentifierPrefix}cids";
@@ -29,13 +29,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
       { PrimitiveType.Void, ("void", "void") }
       };
 
-    private readonly TempVarNameGen _nameGen;
-
-    public JavaCodeGenerator(Module module)
-      : base(module)
-    {
-        _nameGen = new TempVarNameGen(Strings.ForbiddenIdentifierPrefix);
-    }
+    private readonly TempVarNameGen _nameGen = new(Strings.ForbiddenIdentifierPrefix);
 
     public override void Generate()
     {
@@ -49,7 +43,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
 
         var w = new Writer();
 
-        w.WriteAutoGenerationNotice(dstPath, new[] { $"This is the JNI implementation file of {Module.Name}." },
+        w.WriteAutoGenerationNotice(dstPath, [$"This is the JNI implementation file of {Module.Name}."],
           "//", false);
 
         w.WriteLine("// clang-format off");
@@ -100,7 +94,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
 
         w.WriteLine();
 
-        deps = new SortedSet<string> { "jni.h", "vector", "string", "iostream" };
+        deps = ["jni.h", "vector", "string", "iostream"];
 
         foreach (string dep in deps)
             w.WriteLine($"#include <{dep}>");
@@ -259,9 +253,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
                     w.Write($"{retVarName}.{field.Name} = ");
 
                     void EmitEnvMethodCall(string methodName)
-                    {
-                        w.Write($"env->{methodName}(obj, {FidsName}.{strct.Name}_{field.NameInJava})");
-                    }
+                        => w.Write($"env->{methodName}(obj, {FidsName}.{strct.Name}_{field.NameInJava})");
 
                     IDataType type = field.Type;
 
@@ -304,7 +296,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
 
         var w = new Writer();
 
-        w.WriteAutoGenerationNotice(path, new[] { $"Enum {enm.Name}" }, "//", false);
+        w.WriteAutoGenerationNotice(path, [$"Enum {enm.Name}"], "//", false);
 
         GeneratePackageDeclaration(w);
 
@@ -361,7 +353,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
         Logger.LogFileGenerationStatus(strct.Name, path);
 
         var w = new Writer();
-        w.WriteAutoGenerationNotice(path, new[] { $"Struct {strct.Name}" }, "//", false);
+        w.WriteAutoGenerationNotice(path, [$"Struct {strct.Name}"], "//", false);
 
         GeneratePackageDeclaration(w);
 
@@ -425,7 +417,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
     private void GenerateClass(string path, ClassDecl clss)
     {
         var w = new Writer();
-        w.WriteAutoGenerationNotice(path, new[] { $"Class {clss.Name}" }, "//", false);
+        w.WriteAutoGenerationNotice(path, [$"Class {clss.Name}"], "//", false);
 
         GeneratePackageDeclaration(w);
 
@@ -750,7 +742,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
         var w = new Writer();
 
         w.WriteAutoGenerationNotice(filename,
-          new[] { "Built-in exception class that is thrown when native function calls fail." },
+          ["Built-in exception class that is thrown when native function calls fail."],
           "//", false);
 
         GeneratePackageDeclaration(w);
@@ -918,7 +910,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
             w.WriteLine("StringBuilder sb = new StringBuilder(32);");
 
             const int maxFields = 4;
-            int howManyFields = Math.Min(strct.Fields.Count(), maxFields);
+            int howManyFields = Math.Min(strct.Fields.Count, maxFields);
 
             for (int i = 0; i < howManyFields; ++i)
             {
@@ -968,24 +960,20 @@ public sealed class JavaCodeGenerator : CodeGenerator
         {
             if (type == PrimitiveType.String)
             {
-                switch (context)
+                typeName = context switch
                 {
-                    case NameContext.MethodParameter or NameContext.MethodReturnType or NameContext.NativeMethodParameter
-                    or NameContext.NativeMethodReturnType:
-                        typeName = "String";
-                        break;
-                    case NameContext.JniFunctionParameter:
-                    case NameContext.JniFunctionReturnType:
-                        typeName = "jstring";
-                        break;
-                    default:
-                        throw new InvalidOperationException("invalid context " + context);
-                }
+                    NameContext.MethodParameter
+                        or NameContext.MethodReturnType
+                        or NameContext.NativeMethodParameter
+                        or NameContext.NativeMethodReturnType => "String",
+                    NameContext.JniFunctionParameter or NameContext.JniFunctionReturnType => "jstring",
+                    _ => throw new InvalidOperationException("invalid context " + context),
+                };
             }
             else
             {
                 if (!_primTypeNameMap.TryGetValue(type, out (string, string) it))
-                    throw new CompileError($"invalid inner type \"{type.Name}\"", null, ErrorCategory.Internal);
+                    throw CompileError.Internal($"invalid inner type '{type.Name}'");
 
                 typeName = context is NameContext.JniFunctionParameter or NameContext.JniFunctionReturnType
                   ? it.Item1
@@ -1041,7 +1029,7 @@ public sealed class JavaCodeGenerator : CodeGenerator
             return "D";
         if (type == PrimitiveType.Void)
             return "V";
-        throw new CompileError("invalid inner type", null, ErrorCategory.Internal);
+        throw new CompileError("invalid inner type");
     }
 
     public enum NameContext

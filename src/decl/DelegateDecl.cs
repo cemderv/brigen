@@ -15,7 +15,7 @@ public sealed class DelegateDecl : TypeDecl
 
         ReturnType = returnType;
 
-        FunctionHelper.DetermineFuncParamIndices(_parameters);
+        FunctionDecl.DetermineFuncParamIndices(_parameters);
     }
 
     public IDataType ReturnType { get; private set; }

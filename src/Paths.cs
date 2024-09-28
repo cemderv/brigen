@@ -14,17 +14,17 @@ public sealed class Paths
 
         OutputDir = settings.OutputDirectory.CleanPath();
 
-        string specifiedNativePublicDir = module.GetStringVariable(VarNames.NativePublicDir, "include");
+        string specifiedNativePublicDir = module.GetStringVariable(VariableNames.NativePublicDir, "include");
         string nativePublicDir = Path.Combine(OutputDir, specifiedNativePublicDir).CleanPath();
 
-        string specifiedNativePrivateDir = module.GetStringVariable(VarNames.NativePrivateDir, "src");
+        string specifiedNativePrivateDir = module.GetStringVariable(VariableNames.NativePrivateDir, "src");
         string nativePrivateDir = Path.Combine(OutputDir, specifiedNativePrivateDir).CleanPath();
 
         CppHelpersHeader = Path.Combine(nativePrivateDir, module.Name + "_helpers.hpp").CleanPath();
         CppBool32Header = Path.Combine(nativePublicDir, CppBool32HeaderName).CleanPath();
 
         CHeader = Path.Combine(nativePublicDir, module.Name + ".h").CleanPath();
-        CSource = Path.Combine(nativePrivateDir, module.Name + "_capi.cpp").CleanPath();
+        CSource = Path.Combine(nativePrivateDir, module.Name + "_c_api.cpp").CleanPath();
         CppHeader = Path.Combine(nativePublicDir, module.Name + ".hpp").CleanPath();
         CppSource = Path.Combine(nativePrivateDir, module.Name + ".cpp").CleanPath();
         CppImplHeader = Path.Combine(nativePrivateDir, module.Name + "_impl.hpp").CleanPath();
@@ -33,7 +33,7 @@ public sealed class Paths
         // C# check
         if (settings.GenerateCSharpBindings)
         {
-            CSharpFile = module.GetStringVariable(VarNames.CSharpOutDir, string.Empty);
+            CSharpFile = module.GetStringVariable(VariableNames.CSharpOutDir, string.Empty);
 
             if (string.IsNullOrEmpty(CSharpFile))
                 CSharpFile = Path.Combine(OutputDir, "csharp", module.Name + ".cs");
@@ -44,7 +44,7 @@ public sealed class Paths
         // Python check
         if (settings.GeneratePythonBindings)
         {
-            PythonCppFile = module.GetStringVariable(VarNames.PythonCppFile, string.Empty);
+            PythonCppFile = module.GetStringVariable(VariableNames.PythonCppFile, string.Empty);
 
             if (string.IsNullOrEmpty(PythonCppFile))
                 PythonCppFile = Path.Combine(nativePrivateDir, module.Name + "_pybind.cpp");
@@ -56,7 +56,7 @@ public sealed class Paths
         if (settings.GenerateJavaBindings)
         {
             JavaJNICppFile = Path.Combine(nativePrivateDir, module.Name + "_jni.cpp").CleanPath();
-            JavaOutputDirectory = module.GetStringVariable(VarNames.JavaOutDir, string.Empty);
+            JavaOutputDirectory = module.GetStringVariable(VariableNames.JavaOutDir, string.Empty);
 
             if (string.IsNullOrEmpty(JavaOutputDirectory))
             {
@@ -70,6 +70,12 @@ public sealed class Paths
             }
 
             JavaOutputDirectory = JavaOutputDirectory.CleanPath();
+        }
+
+        // CMake check
+        if (settings.GenerateCMake)
+        {
+            CMakeListsFile = Path.Combine(OutputDir, "CMakeLists.txt").CleanPath();
         }
     }
 
@@ -89,4 +95,6 @@ public sealed class Paths
     public string PythonCppFile { get; } = string.Empty;
     public string JavaJNICppFile { get; set; } = string.Empty;
     public string JavaOutputDirectory { get; set; } = string.Empty;
+
+    public string CMakeListsFile { get; } = string.Empty;
 }

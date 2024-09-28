@@ -4,7 +4,7 @@ namespace brigen.types;
 
 public sealed class UnresolvedType : IDataType
 {
-    private static readonly Dictionary<string, UnresolvedType> s_TypeMap = new();
+    private static readonly Dictionary<string, UnresolvedType> s_TypeMap = [];
     private bool _isVerified;
     private IDataType _resolvedType;
 

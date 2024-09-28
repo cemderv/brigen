@@ -5,13 +5,8 @@ namespace brigen.gen;
 /// <summary>
 /// Represents the base class of C/C++ code generators.
 /// </summary>
-public abstract class NativeCodeGenerator : CodeGenerator
+public abstract class NativeCodeGenerator(Module module) : CodeGenerator(module)
 {
-    protected NativeCodeGenerator(Module module)
-      : base(module)
-    {
-    }
-
     protected void GenerateHeaderPreamble(Writer w, bool isCpp)
     {
         w.WriteLine("#if defined(WIN32) || defined(_WIN64)");
@@ -39,7 +34,7 @@ public abstract class NativeCodeGenerator : CodeGenerator
 
         if (isCpp)
         {
-            filesToInclude = new SortedSet<string> { "utility", "cstddef", "cstdint", Paths.CppBool32HeaderName };
+            filesToInclude = ["utility", "cstddef", "cstdint", Paths.CppBool32HeaderName];
 
             // In order to generate our own hash implementations, we have to include
             // <functional>, as that is where hash is stored.
@@ -48,7 +43,7 @@ public abstract class NativeCodeGenerator : CodeGenerator
         }
         else
         {
-            filesToInclude = new SortedSet<string> { "stddef.h", "stdint.h" };
+            filesToInclude = ["stddef.h", "stdint.h"];
 
             if (emitLintDisableWarnings)
                 filesToDisableWarningsFor = new SortedSet<string>(filesToInclude);
@@ -84,13 +79,13 @@ public abstract class NativeCodeGenerator : CodeGenerator
         {
             w.Write("/// ");
 
-            if (prop != null && line == comment.ContentLines.First())
+            if (prop != null && line == comment.ContentLines[0])
                 w.Write(prop switch
                 {
                     { HasGetter: true, HasSetter: true } => "Gets or sets ",
                     { HasGetter: true } => "Gets ",
                     { HasSetter: true } => "Sets ",
-                    _ => throw new CompileError("Property comment", null, ErrorCategory.Internal)
+                    _ => throw CompileError.Internal("Property comment")
                 });
 
             w.WriteLine(line);

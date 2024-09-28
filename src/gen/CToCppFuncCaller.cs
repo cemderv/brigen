@@ -135,21 +135,20 @@ internal sealed class CToCppFuncCaller : IDisposable
         {
             IDataType type = parameter.Type;
 
-            if (parameter.Type.IsClass)
-                if (!type.IsArray)
-                {
-                    var clss = type as ClassDecl;
-                    Debug.Assert(clss != null);
+            if (parameter.Type.IsClass && !type.IsArray)
+            {
+                var clss = type as ClassDecl;
+                Debug.Assert(clss != null);
 
-                    string classNameInCpp = CppCodeGenerator.GetTypeName(_module, clss, CppCodeGenerator.NameContext.Neutral,
-                      CppCodeGenerator.NameContextFlags.ForceModulePrefix);
-                    string paramNameObj = _nameGen.CreateNext();
+                string classNameInCpp = CppCodeGenerator.GetTypeName(_module, clss, CppCodeGenerator.NameContext.Neutral,
+                  CppCodeGenerator.NameContextFlags.ForceModulePrefix);
+                string paramNameObj = _nameGen.CreateNext();
 
-                    _writer.WriteLine(
-                      $"auto {paramNameObj} = {classNameInCpp}(reinterpret_cast<{clss.QualifiedImplClassName}*>({parameter.Name}));");
+                _writer.WriteLine(
+                  $"auto {paramNameObj} = {classNameInCpp}(reinterpret_cast<{clss.QualifiedImplClassName}*>({parameter.Name}));");
 
-                    _classVars.Add((parameter, paramNameObj));
-                }
+                _classVars.Add((parameter, paramNameObj));
+            }
         }
     }
 
@@ -275,17 +274,6 @@ internal sealed class CToCppFuncCaller : IDisposable
 
     private void Closure()
     {
-        // Normally we would secretly tell the objects to drop their pointers, but since we constructed them using their
-        // impl-constructor, they have a reference to their pointers. Therefore we should leave it, they should release their
-        // pointers when they're destroyed.
-#if false
-  var module = _function.Module;
-
-  foreach (auto it = _classVars.rbegin(); it != _classVars.rend(); ++it) {
-    _writer.Write( it.second << '.'
-             << NameResolution.getSpecialBuiltInFunctionName(SpecialCppBuiltInFunction.DropImpl, module) << "();\n";
-  }
-#endif
     }
 
     private void GenerateStructArgument(StructDecl _, FunctionParamDecl param)

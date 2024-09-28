@@ -1,30 +1,11 @@
-using brigen.Properties;
-
 namespace brigen;
-
-internal enum ErrorCategory
-{
-    General,
-    Syntax,
-    Internal,
-    FileContents
-}
-
-internal enum CompileErrorId
-{
-}
 
 internal sealed class CompileError : Exception
 {
-    public CompileError(
-      string message, CodeRange? range = null,
-      ErrorCategory category = ErrorCategory.General,
-      CompileErrorId? id = null)
+    public CompileError(string message, CodeRange? range = null)
     {
         Message = message;
         Range = range;
-        Category = category;
-        Id = id;
 
         if (range != null)
         {
@@ -39,27 +20,29 @@ internal sealed class CompileError : Exception
 
     public CodeRange? Range { get; }
 
-    public ErrorCategory Category { get; }
-
-    public CompileErrorId? Id { get; }
-
     public static CompileError UndefinedSymbolUsed(Module module, string searchedSymbol, CodeRange range)
     {
         Decl? similarSymbol = module.FindSimilarlyNamedDecl(searchedSymbol);
 
         string msg = similarSymbol != null
-          ? string.Format(Messages.UndefinedSymUsed_WithSuggestion, searchedSymbol, similarSymbol.Name)
-          : string.Format(Messages.UndefinedSymUsed, searchedSymbol);
+          ? $"Undefined symbol '{searchedSymbol}' used; did you mean '{similarSymbol.Name}'?"
+          : $"Undefined symbol '{searchedSymbol}' used";
 
         return new CompileError(msg, range);
     }
 
     public static CompileError UnexpectedTopLevelToken(Token token)
-      => new(string.Format(Messages.UnexpectedTopLevelTk, token.Value), token.Range, ErrorCategory.Syntax);
+      => new($"Unexpected top-level token '{token.Value}' encountered.", token.Range);
+
+    public static CompileError UnexpectedToken(Token token)
+    => new($"Unexpected token '{token.Value}' encountered.", token.Range);
 
     public static CompileError UnexpectedEof(Token token)
-      => new(Messages.UnexpectedEof, token.Range, ErrorCategory.Syntax);
+      => new("Unexpected end-of-file encountered", token.Range);
 
     public static CompileError Internal(string message, CodeRange? range = null)
-      => new(string.Format(Messages.InternalCompileError, message), range, ErrorCategory.Internal);
+      => new($"An internal compiler error occurred: {message}", range);
+
+    public static CompileError UnknownClassModifier(Token token)
+    => new($"Unknown class modifier '{token.Value}' specified.", token.Range);
 }

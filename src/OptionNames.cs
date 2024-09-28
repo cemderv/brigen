@@ -7,4 +7,5 @@ public static class Names
     public const string GenCSharp = "csharp";
     public const string GenPython = "python";
     public const string GenJava = "java";
+    public const string NoCMake = "no-cmake";
 }
