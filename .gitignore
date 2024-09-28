@@ -4,3 +4,4 @@
 *.user
 libclang.dll
 bin/
+out/
