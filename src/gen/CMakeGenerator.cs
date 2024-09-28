@@ -63,6 +63,9 @@ namespace brigen.gen
             w.WriteLine(')');
             w.WriteLine();
 
+            w.WriteLine("target_compile_features(${ProjectName} PRIVATE cxx_std_17)");
+            w.WriteLine();
+
             w.SaveContentsToDisk(cmakeListsFilename);
         }
     }
